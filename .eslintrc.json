@@ -11,6 +11,7 @@
     "prettier/prettier": "error",
     "no-var": "error",
     "no-param-reassign": "error",
+    "react/prop-types": "off",
     "@typescript-eslint/explicit-function-return-type": "error",
     "@typescript-eslint/no-explicit-any": "error"
   },
@@ -24,6 +25,9 @@
       "pragma": "React",
       "version": "detect"
     }
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json"
   },
   "parser": "@typescript-eslint/parser"
 }
