@@ -1,0 +1,20 @@
+.Col {
+  text-align: right;
+}
+
+.MoveCol {
+  float: right;
+}
+
+.MoveTable {
+  text-align: center;
+}
+
+.RotationCol {
+  width: 20px;
+}
+
+.MessageCol {
+  position: relative;
+  right: 20px;
+}

@@ -1,11 +1,10 @@
 import React from "react";
 import "./App.css";
-import NextPiece, {
-  IBlock,
-  GamePiece,
-  rotateRight,
-  AllBlocks
-} from "./components/NextPiece";
+import NextPiece from "./components/NextPiece";
+import { IBlock, GamePiece, rotateRight, AllBlocks } from "./state/GamePiece";
+import Header from "./components/Header";
+import Controls from "./components/Controls";
+import GameBoard from "./components/GameBoard";
 
 type NextPieceProps = {
   piece: GamePiece;
@@ -42,12 +41,10 @@ const NextPieceContainer: React.FC<NextPieceProps> = props => {
 const App: React.FC<{}> = () => {
   return (
     <div id="main" className="App">
+      <Header />
       <div id="gameArea" className="row">
-        <div
-          id="controls"
-          className="col-md-4 d-none d-md-block ControlsCol"
-        ></div>
-        <div id="gameboard" className="col-md-4 col-8"></div>
+        <Controls />
+        <GameBoard />
         <div id="nextpiece" className="col-md-4 col-4">
           <div className="d-none d-md-block">
             <b>Next Piece</b>
