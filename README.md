@@ -6,7 +6,7 @@ Wide browser support on both desktop and mobile devices. Includes keyboard and t
 
 ## Architecture
 
-Purely functional with all state management / side effects 
+Purely functional with all state management / side effects injected by the application following the onion architecture.
 
 ## Getting Started
 
