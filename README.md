@@ -1,8 +1,14 @@
 # tetris-react-ts
 
-This is the classic game of Tetris written in pure HTML (No Canvas 2D Controls). It uses HTML Tables and React for rendering, and is surprisingly pretty fast. I know there's a lot of these out on the web but I wanted to create something that is minimalistic works well based on React function components and state management.
+This is the classic game of Tetris written in pure HTML (No Canvas 2D Controls). It uses HTML Tables and React for rendering, and is surprisingly pretty fast. I know there's a lot of these out on the web but I wanted to create something that is minimalist and works well based on React function components and state management.
 
 Wide browser support on both desktop and mobile devices. Includes keyboard and touch. It is fully responsive and on larger screens it displays more information like the next piece.
+
+## Architecture
+
+Purely functional with all state management / side effects 
+
+## Getting Started
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
