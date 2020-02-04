@@ -1,6 +1,5 @@
 import React from "react";
 import "./App.css";
-import { IBlock } from "./state/GamePiece";
 import Header from "./components/Header";
 import Controls from "./components/Controls";
 import GameBoard from "./components/GameBoard";
@@ -19,7 +18,7 @@ const App: React.FC<{}> = () => {
             <br />
           </div>
           <br />
-          <NextPiece piece={IBlock} />
+          <NextPiece />
         </div>
       </div>
     </div>

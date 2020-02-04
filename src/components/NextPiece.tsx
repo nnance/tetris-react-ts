@@ -1,14 +1,14 @@
 import React from "react";
 import "./NextPiece.css";
-import { GamePiece } from "../state/GamePiece";
+import { DrawableGrid } from "../state/DrawableGrid";
 
-type NextPieceProps = { piece: GamePiece };
+type NextPieceProps = { grid: DrawableGrid };
 
 const NextPiece: React.FC<NextPieceProps> = props => {
   return (
     <table>
       <tbody>
-        {props.piece.map((row, rowIdx) => (
+        {props.grid.map((row, rowIdx) => (
           <tr key={rowIdx}>
             {row.map((col, idx) => (
               <td
