@@ -1,7 +1,7 @@
 import React from "react";
 import NextPiece from "../components/NextPiece";
 import { GamePiece, rotateRight, AllBlocks } from "../state/GamePiece";
-import useKeyPress from "../hooks/useKeyPress";
+import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 
 type NextPieceProps = {
   piece: GamePiece;
@@ -11,12 +11,12 @@ const NextPieceContainer: React.FC<NextPieceProps> = props => {
   const [state, setState] = React.useState(props.piece);
   const [blockIdx, setBlockIdx] = React.useState(0);
 
-  const upArrow = useKeyPress({ keyCode: 38 });
+  const upArrow = useKeyPress({ keyCode: KeyCode.upArrow });
   React.useEffect(() => {
     if (upArrow) setState(state => rotateRight(state));
   }, [upArrow]);
 
-  const rightArrow = useKeyPress({ keyCode: 39 });
+  const rightArrow = useKeyPress({ keyCode: KeyCode.rightArrow });
   React.useEffect(() => {
     if (rightArrow) {
       setBlockIdx(blockIdx =>

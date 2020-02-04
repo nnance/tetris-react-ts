@@ -1,8 +1,15 @@
 import React from "react";
 
+export enum KeyCode {
+  leftArrow = 37,
+  upArrow = 38,
+  rightArrow = 39,
+  downArrow = 40
+}
+
 type KeyPressProps = {
   key?: string;
-  keyCode?: number;
+  keyCode?: KeyCode;
 };
 
 export default function useKeyPress(targetKey: KeyPressProps): boolean {
