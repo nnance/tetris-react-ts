@@ -12,22 +12,18 @@ const NextPieceContainer: React.FC<NextPieceProps> = props => {
   const [blockIdx, setBlockIdx] = React.useState(0);
 
   const upArrow = useKeyPress({ keyCode: 38 });
-
-  const keyHandler = (ev: KeyboardEvent): void => {
-    if (ev.keyCode === 38) setState(rotateRight(state));
-    if (ev.keyCode === 39) {
-      blockIdx < AllBlocks.length - 1
-        ? setBlockIdx(blockIdx + 1)
-        : setBlockIdx(0);
-    }
-  };
-
   React.useEffect(() => {
-    window.addEventListener("keydown", keyHandler);
-    return (): void => {
-      window.removeEventListener("keydown", keyHandler);
-    };
-  });
+    if (upArrow) setState(state => rotateRight(state));
+  }, [upArrow]);
+
+  const rightArrow = useKeyPress({ keyCode: 39 });
+  React.useEffect(() => {
+    if (rightArrow) {
+      setBlockIdx(blockIdx =>
+        blockIdx < AllBlocks.length - 1 ? blockIdx + 1 : 0
+      );
+    }
+  }, [rightArrow]);
 
   React.useEffect(() => setState(AllBlocks[blockIdx]), [blockIdx]);
 
