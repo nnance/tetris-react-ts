@@ -26,9 +26,9 @@ export const drawIBlock = (x: number, y: number): DrawableAction[] => {
   return verticalIBlock(x, y, BlockState.on);
 };
 
-export const moveIBlock = (x: number, y: number): DrawableAction[] => {
-  const erase = verticalIBlock(x, y, BlockState.off);
-  const draw = verticalIBlock(x, y + 1, BlockState.on);
+export const moveIBlock = (prevX: number, prevY: number, x: number, y: number): DrawableAction[] => {
+  const erase = verticalIBlock(prevX, prevY, BlockState.off);
+  const draw = verticalIBlock(x, y, BlockState.on);
   return erase.concat(draw);
 };
 

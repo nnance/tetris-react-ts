@@ -1,6 +1,7 @@
 import React from "react";
 
 export enum KeyCode {
+  spaceBar = 32,
   leftArrow = 37,
   upArrow = 38,
   rightArrow = 39,

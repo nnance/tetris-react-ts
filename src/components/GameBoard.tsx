@@ -1,44 +1,12 @@
 import React from "react";
 import "./GameBoard.css";
+import { DrawableGrid } from "../state/DrawableGrid";
 
-type BoardBlock = number;
-type BoardRow = [
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock,
-  BoardBlock
-];
-type Board = [
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow,
-  BoardRow
-];
+type GameBoardProps = {
+  board: DrawableGrid;
+}
 
-const GameBoard: React.FC = () => {
-  const board = Array(20).fill(Array(10).fill(0) as BoardRow) as Board;
+const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
   return (
     <div className="col-md-4 col-8">
       <table className="GameBoard">
