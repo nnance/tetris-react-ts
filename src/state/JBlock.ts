@@ -1,4 +1,5 @@
-import { DrawableAction, BlockState } from "./DrawableGrid";
+import { BlockState } from "./DrawableGrid";
+import { DrawableAction, Piece } from "./BlockDrawer";
 
 const verticalJBlock = (
   x: number,
@@ -21,6 +22,8 @@ const horizontalJBlock = (
   { x: x + 1, y: y + 1, state },
   { x: x + 2, y: y + 1, state }
 ];
+
+export const drawers: Piece = [verticalJBlock, horizontalJBlock];
 
 export const drawJBlock = (x: number, y: number): DrawableAction[] => {
   return horizontalJBlock(x, y, BlockState.on);

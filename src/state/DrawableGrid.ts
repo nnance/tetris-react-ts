@@ -1,16 +1,11 @@
 import { cloneDeep } from "lodash";
+import { DrawableAction } from "./BlockDrawer";
 
 export enum BlockState {
   off = 0,
   on = 1,
   shaded = 2
 }
-
-export type DrawableAction = {
-  x: number;
-  y: number;
-  state: BlockState;
-};
 
 export type DrawableGrid = BlockState[][];
 

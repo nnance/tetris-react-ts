@@ -1,12 +1,7 @@
-import { DrawableAction, BlockState } from "./DrawableGrid";
+import { BlockState } from "./DrawableGrid";
+import { DrawableAction, BlockDrawer, Piece } from "./BlockDrawer";
 
-export type BlockDrawer = (
-  x: number,
-  y: number,
-  state: BlockState
-) => DrawableAction[];
-
-export const verticalIBlock = (
+const verticalIBlock = (
   x: number,
   y: number,
   state: BlockState
@@ -17,7 +12,7 @@ export const verticalIBlock = (
   { x, y: y + 3, state }
 ];
 
-export const horizontalIBlock = (
+const horizontalIBlock = (
   x: number,
   y: number,
   state: BlockState
@@ -27,6 +22,8 @@ export const horizontalIBlock = (
   { x: x + 2, y, state },
   { x: x + 3, y, state }
 ];
+
+export const drawers: Piece = [verticalIBlock, horizontalIBlock];
 
 export const drawIBlock = (x: number, y: number): DrawableAction[] => {
   return verticalIBlock(x, y, BlockState.on);

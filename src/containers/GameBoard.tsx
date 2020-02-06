@@ -6,10 +6,9 @@ import {
   drawIBlock,
   moveIBlock,
   rotateIBlock,
-  verticalIBlock,
-  BlockDrawer,
-  horizontalIBlock
+  drawers
 } from "../state/IBlock";
+import { BlockDrawer } from "../state/BlockDrawer";
 
 // TODO: don't draw piece until space bar is pressed
 // TODO: implement edge detection for right and left movement
@@ -32,14 +31,12 @@ type GamePiece = {
   drawer: BlockDrawer;
 };
 
-const drawers = [verticalIBlock, horizontalIBlock];
-
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
   const [pos, setPos] = React.useState<GamePiece>({
     prev: { x: 0, y: 0 },
     current: { x: 1, y: 0 },
-    drawer: verticalIBlock
+    drawer: drawers[0]
   });
 
   const spaceBar = useKeyPress({ keyCode: KeyCode.spaceBar });
@@ -79,10 +76,10 @@ const GameBoardContainer: React.FC = () => {
   }, [rightArrow]);
 
   React.useEffect(() => {
-    const newDrawer =
-      pos.drawer === horizontalIBlock ? verticalIBlock : horizontalIBlock;
-
     if (upArrow) {
+      const idx = drawers.findIndex(drawer => drawer === pos.drawer);
+      const newDrawer = drawers[idx === drawers.length - 1 ? 0 : idx + 1];
+
       setState(state =>
         updateBoard(
           rotateIBlock(pos.current.x, pos.current.y, pos.drawer, newDrawer),
