@@ -6,7 +6,9 @@ import {
   drawIBlock,
   moveIBlock,
   rotateIBlock,
-  verticalIBlock
+  verticalIBlock,
+  BlockDrawer,
+  horizontalIBlock
 } from "../state/IBlock";
 
 // TODO: maintain rotation state so it draws the correct orientation
@@ -19,11 +21,25 @@ const board: DrawableGrid = Array(20)
   .fill(0)
   .map(x => Array(10).fill(0));
 
+type Pos = {
+  x: number;
+  y: number;
+};
+
+type GamePiece = {
+  prev: Pos;
+  current: Pos;
+  drawer: BlockDrawer;
+};
+
+const drawers = [verticalIBlock, horizontalIBlock];
+
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
-  const [pos, setPos] = React.useState({
+  const [pos, setPos] = React.useState<GamePiece>({
     prev: { x: 0, y: 0 },
-    current: { x: 1, y: 0 }
+    current: { x: 1, y: 0 },
+    drawer: verticalIBlock
   });
 
   const spaceBar = useKeyPress({ keyCode: KeyCode.spaceBar });
@@ -35,9 +51,10 @@ const GameBoardContainer: React.FC = () => {
     if (spaceBar) {
       setState(state => updateBoard(drawIBlock(1, 0), state));
       setInterval(() => {
-        setPos(({ current }) => ({
+        setPos(({ current, drawer }) => ({
           prev: current,
-          current: { x: current.x, y: current.y + 1 }
+          current: { x: current.x, y: current.y + 1 },
+          drawer
         }));
       }, 500);
     }
@@ -45,32 +62,44 @@ const GameBoardContainer: React.FC = () => {
 
   React.useEffect(() => {
     if (leftArrow)
-      setPos(({ current }) => ({
+      setPos(({ current, drawer }) => ({
         prev: current,
-        current: { x: current.x - 1, y: current.y }
+        current: { x: current.x - 1, y: current.y },
+        drawer
       }));
   }, [leftArrow]);
 
   React.useEffect(() => {
     if (rightArrow)
-      setPos(({ current }) => ({
+      setPos(({ current, drawer }) => ({
         prev: current,
-        current: { x: current.x + 1, y: current.y }
+        current: { x: current.x + 1, y: current.y },
+        drawer
       }));
   }, [rightArrow]);
 
   React.useEffect(() => {
-    if (upArrow)
+    if (upArrow) {
       setState(state =>
-        updateBoard(rotateIBlock(pos.current.x, pos.current.y), state)
+        updateBoard(
+          rotateIBlock(
+            pos.current.x,
+            pos.current.y,
+            verticalIBlock,
+            horizontalIBlock
+          ),
+          state
+        )
       );
+      setPos(pos => ({ ...pos, drawer: horizontalIBlock }));
+    }
   }, [upArrow, pos]);
 
   React.useEffect(() => {
     setState(state => {
-      const { prev, current } = pos;
+      const { prev, current, drawer } = pos;
       return updateBoard(
-        moveIBlock(prev.x, prev.y, current.x, current.y, verticalIBlock),
+        moveIBlock(prev.x, prev.y, current.x, current.y, drawer),
         state
       );
     });

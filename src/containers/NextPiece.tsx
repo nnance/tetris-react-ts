@@ -12,10 +12,10 @@ const AllBlocks: ((state: DrawableGrid) => DrawableGrid)[] = [
   (state): DrawableGrid => updateBoard(drawJBlock(1, 0), state)
 ];
 
-const RotateBlocks: ((state: DrawableGrid) => DrawableGrid)[] = [
-  (state): DrawableGrid => updateBoard(rotateIBlock(1, 0), state),
-  (state): DrawableGrid => updateBoard(rotateJBlock(1, 0), state)
-];
+// const RotateBlocks: ((state: DrawableGrid) => DrawableGrid)[] = [
+//   (state): DrawableGrid => updateBoard(rotateIBlock(1, 0), state),
+//   (state): DrawableGrid => updateBoard(rotateJBlock(1, 0), state)
+// ];
 
 const NextPieceContainer: React.FC<{}> = () => {
   const [state, setState] = React.useState(emptyGrid);
