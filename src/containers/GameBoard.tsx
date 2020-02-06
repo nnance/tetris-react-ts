@@ -11,9 +11,9 @@ import {
   horizontalIBlock
 } from "../state/IBlock";
 
-// TODO: maintain rotation state so it draws the correct orientation
 // TODO: don't draw piece until space bar is pressed
 // TODO: implement edge detection for right and left movement
+// TODO: fix layout to remove horizontal scroll
 // TODO: detect the bottom of the board and stop movement
 // TODO: impelement the current piece so that the board and the next piece is correct
 
@@ -79,21 +79,22 @@ const GameBoardContainer: React.FC = () => {
   }, [rightArrow]);
 
   React.useEffect(() => {
+    const newDrawer =
+      pos.drawer === horizontalIBlock ? verticalIBlock : horizontalIBlock;
+
     if (upArrow) {
       setState(state =>
         updateBoard(
-          rotateIBlock(
-            pos.current.x,
-            pos.current.y,
-            verticalIBlock,
-            horizontalIBlock
-          ),
+          rotateIBlock(pos.current.x, pos.current.y, pos.drawer, newDrawer),
           state
         )
       );
-      setPos(pos => ({ ...pos, drawer: horizontalIBlock }));
+      setPos(pos => ({
+        ...pos,
+        drawer: newDrawer
+      }));
     }
-  }, [upArrow, pos]);
+  }, [upArrow]);
 
   React.useEffect(() => {
     setState(state => {
