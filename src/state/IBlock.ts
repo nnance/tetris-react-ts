@@ -1,6 +1,12 @@
 import { DrawableAction, BlockState } from "./DrawableGrid";
 
-const verticalIBlock = (
+type BlockDrawer = (
+  x: number,
+  y: number,
+  state: BlockState
+) => DrawableAction[];
+
+export const verticalIBlock = (
   x: number,
   y: number,
   state: BlockState
@@ -11,7 +17,7 @@ const verticalIBlock = (
   { x, y: y + 3, state }
 ];
 
-const horizontalIBlock = (
+export const horizontalIBlock = (
   x: number,
   y: number,
   state: BlockState
@@ -26,9 +32,15 @@ export const drawIBlock = (x: number, y: number): DrawableAction[] => {
   return verticalIBlock(x, y, BlockState.on);
 };
 
-export const moveIBlock = (prevX: number, prevY: number, x: number, y: number): DrawableAction[] => {
-  const erase = verticalIBlock(prevX, prevY, BlockState.off);
-  const draw = verticalIBlock(x, y, BlockState.on);
+export const moveIBlock = (
+  prevX: number,
+  prevY: number,
+  x: number,
+  y: number,
+  drawer: BlockDrawer
+): DrawableAction[] => {
+  const erase = drawer(prevX, prevY, BlockState.off);
+  const draw = drawer(x, y, BlockState.on);
   return erase.concat(draw);
 };
 

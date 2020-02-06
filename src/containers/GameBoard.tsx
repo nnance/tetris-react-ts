@@ -2,9 +2,14 @@ import React from "react";
 import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { drawIBlock, moveIBlock, rotateIBlock } from "../state/IBlock";
+import {
+  drawIBlock,
+  moveIBlock,
+  rotateIBlock,
+  verticalIBlock
+} from "../state/IBlock";
 
-// TODO: maintain rotation state so it draws the correct orientation 
+// TODO: maintain rotation state so it draws the correct orientation
 // TODO: don't draw piece until space bar is pressed
 // TODO: implement edge detection for right and left movement
 // TODO: detect the bottom of the board and stop movement
@@ -62,12 +67,13 @@ const GameBoardContainer: React.FC = () => {
   }, [upArrow, pos]);
 
   React.useEffect(() => {
-    setState(state =>
-      updateBoard(
-        moveIBlock(pos.prev.x, pos.prev.y, pos.current.x, pos.current.y),
+    setState(state => {
+      const { prev, current } = pos;
+      return updateBoard(
+        moveIBlock(prev.x, prev.y, current.x, current.y, verticalIBlock),
         state
-      )
-    );
+      );
+    });
   }, [pos]);
 
   return <GameBoard board={state} />;
