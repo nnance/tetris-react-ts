@@ -2,16 +2,7 @@ import React from "react";
 import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { drawers as iBlockDrawers } from "../state/IBlock";
-import { drawers as jBlockDrawers } from "../state/JBlock";
-import {
-  drawBlock,
-  moveBlock,
-  rotateBlock,
-  BlockDrawer,
-  DrawableAction,
-  Piece
-} from "../state/BlockDrawer";
+import { pieceReducer, pickNewPiece } from "../state/reducers";
 
 // TODO: implement edge detection for right and left movement
 // TODO: fix layout to remove horizontal scroll
@@ -22,18 +13,6 @@ const board: DrawableGrid = Array(20)
   .fill(0)
   .map(() => Array(10).fill(0));
 
-type Pos = {
-  x: number;
-  y: number;
-};
-
-type GamePiece = {
-  pos: Pos;
-  piece: Piece;
-  drawer: BlockDrawer;
-  actions?: DrawableAction[];
-};
-
 enum PieceAction {
   start,
   moveRight,
@@ -41,68 +20,6 @@ enum PieceAction {
   moveDown,
   rotate
 }
-
-const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
-
-const pickNewPiece = (): GamePiece => {
-  const pieceIndex = Math.floor(Math.random() * pieces.length);
-  const pos = { x: 1, y: 0 };
-  const piece = pieces[pieceIndex];
-  return {
-    pos,
-    piece,
-    drawer: piece[0]
-  };
-};
-
-const atBottom = (piece: GamePiece): boolean => piece.pos.y > board.length - 1;
-
-const pieceReducer = (
-  state: GamePiece,
-  action: { type: PieceAction }
-): GamePiece => {
-  const idx = state.piece.findIndex(drawer => drawer === state.drawer);
-  const newDrawer = state.piece[idx === state.piece.length - 1 ? 0 : idx + 1];
-  const {
-    pos: { x, y },
-    drawer
-  } = state;
-
-  const newPiece = action.type === PieceAction.start && pickNewPiece();
-
-  return action.type === PieceAction.start && newPiece
-    ? {
-        ...newPiece,
-        actions: drawBlock(newPiece.pos.x, newPiece.pos.y, newPiece.drawer)
-      }
-    : action.type === PieceAction.moveRight
-    ? {
-        ...state,
-        pos: { ...state.pos, x: x + 1 },
-        actions: moveBlock(x, y, x + 1, y, drawer)
-      }
-    : action.type === PieceAction.moveLeft
-    ? {
-        ...state,
-        pos: { ...state.pos, x: x > 0 ? x - 1 : x },
-        actions: x > 0 ? moveBlock(x, y, x - 1, y, drawer) : state.actions
-      }
-    : action.type === PieceAction.moveDown
-    ? {
-        ...state,
-        pos: { ...state.pos, y: atBottom(state) ? y : y + 1 },
-        actions: atBottom(state)
-          ? state.actions
-          : moveBlock(x, y, x, y + 1, drawer)
-      }
-    : action.type === PieceAction.rotate
-    ? {
-        ...state,
-        drawer: newDrawer,
-        actions: rotateBlock(x, y, drawer, newDrawer)
-      }
-    : { ...state };
-};
 
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
@@ -140,13 +57,9 @@ const GameBoardContainer: React.FC = () => {
   }, [upArrow]);
 
   React.useEffect(() => {
-    if (block && atBottom(block)) {
-      dispatch({ type: PieceAction.start });
-    } else {
-      setState(state => {
-        return updateBoard(block.actions ? block.actions : [], state);
-      });
-    }
+    setState(state => {
+      return updateBoard(block.actions ? block.actions : [], state);
+    });
   }, [block]);
 
   return <GameBoard board={state} />;

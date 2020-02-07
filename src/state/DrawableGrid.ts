@@ -1,5 +1,5 @@
 import { cloneDeep } from "lodash";
-import { DrawableAction } from "./BlockDrawer";
+import { DrawableAction, Piece, BlockDrawer } from "./BlockDrawer";
 
 export enum BlockState {
   off = 0,
@@ -8,6 +8,18 @@ export enum BlockState {
 }
 
 export type DrawableGrid = BlockState[][];
+
+type Pos = {
+  x: number;
+  y: number;
+};
+
+export type BoardPiece = {
+  pos: Pos;
+  piece: Piece;
+  drawer: BlockDrawer;
+  actions?: DrawableAction[];
+};
 
 export const updateBoard = (
   actions: DrawableAction[],
