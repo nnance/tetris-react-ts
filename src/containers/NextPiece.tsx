@@ -6,7 +6,9 @@ import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
 import { drawers } from "../state/IBlock";
 import { drawers as jBlockDrawers } from "../state/IBlock";
 
-const emptyGrid: DrawableGrid = Array(5).fill(0).map(x => Array(5).fill(0));
+const emptyGrid: DrawableGrid = Array(5)
+  .fill(0)
+  .map(() => Array(5).fill(0));
 
 const AllBlocks: ((state: DrawableGrid) => DrawableGrid)[] = [
   (state): DrawableGrid => updateBoard(drawBlock(1, 0, drawers[0]), state),

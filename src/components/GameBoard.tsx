@@ -4,7 +4,7 @@ import { DrawableGrid } from "../state/DrawableGrid";
 
 type GameBoardProps = {
   board: DrawableGrid;
-}
+};
 
 const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
   return (

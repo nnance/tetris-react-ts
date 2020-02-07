@@ -20,7 +20,7 @@ import {
 
 const board: DrawableGrid = Array(20)
   .fill(0)
-  .map(x => Array(10).fill(0));
+  .map(() => Array(10).fill(0));
 
 type Pos = {
   x: number;
@@ -35,6 +35,7 @@ type GamePiece = {
 };
 
 enum PieceAction {
+  start,
   moveRight,
   moveLeft,
   moveDown,
@@ -42,6 +43,19 @@ enum PieceAction {
 }
 
 const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
+
+const pickNewPiece = (): GamePiece => {
+  const pieceIndex = Math.floor(Math.random() * pieces.length);
+  const pos = { x: 1, y: 0 };
+  const piece = pieces[pieceIndex];
+  return {
+    pos,
+    piece,
+    drawer: piece[0]
+  };
+};
+
+const atBottom = (piece: GamePiece): boolean => piece.pos.y > board.length - 1;
 
 const pieceReducer = (
   state: GamePiece,
@@ -54,7 +68,14 @@ const pieceReducer = (
     drawer
   } = state;
 
-  return action.type === PieceAction.moveRight
+  const newPiece = action.type === PieceAction.start && pickNewPiece();
+
+  return action.type === PieceAction.start && newPiece
+    ? {
+        ...newPiece,
+        actions: drawBlock(newPiece.pos.x, newPiece.pos.y, newPiece.drawer)
+      }
+    : action.type === PieceAction.moveRight
     ? {
         ...state,
         pos: { ...state.pos, x: x + 1 },
@@ -69,8 +90,10 @@ const pieceReducer = (
     : action.type === PieceAction.moveDown
     ? {
         ...state,
-        pos: { ...state.pos, y: y < 19 ? y + 1 : y },
-        actions: y < 19 ? moveBlock(x, y, x, y + 1, drawer) : state.actions
+        pos: { ...state.pos, y: atBottom(state) ? y : y + 1 },
+        actions: atBottom(state)
+          ? state.actions
+          : moveBlock(x, y, x, y + 1, drawer)
       }
     : action.type === PieceAction.rotate
     ? {
@@ -83,13 +106,8 @@ const pieceReducer = (
 
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
-  const pieceIndex = Math.floor(Math.random() * pieces.length);
-  const [block, dispatch] = React.useReducer(pieceReducer, {
-    pos: { x: 1, y: 0 },
-    piece: pieces[pieceIndex],
-    drawer: pieces[pieceIndex][0]
-  });
-  const [timer, setTimer] = React.useState();
+  const [block, dispatch] = React.useReducer(pieceReducer, pickNewPiece());
+  const [, setTimer] = React.useState();
 
   const spaceBar = useKeyPress({ keyCode: KeyCode.spaceBar });
   const leftArrow = useKeyPress({ keyCode: KeyCode.leftArrow });
@@ -98,13 +116,14 @@ const GameBoardContainer: React.FC = () => {
 
   React.useEffect(() => {
     if (spaceBar) {
-      setState(state => updateBoard(drawBlock(1, 0, block.drawer), state));
-      const interval = setInterval(() => {
-        dispatch({ type: PieceAction.moveDown });
-      }, 500);
-      setTimer(interval);
+      setTimer(
+        setInterval(() => {
+          dispatch({ type: PieceAction.moveDown });
+        }, 500)
+      );
+      dispatch({ type: PieceAction.start });
     }
-  }, [spaceBar, block]);
+  }, [spaceBar]);
 
   React.useEffect(() => {
     if (leftArrow) dispatch({ type: PieceAction.moveLeft });
@@ -121,9 +140,13 @@ const GameBoardContainer: React.FC = () => {
   }, [upArrow]);
 
   React.useEffect(() => {
-    setState(state => {
-      return updateBoard(block.actions ? block.actions : [], state);
-    });
+    if (block && atBottom(block)) {
+      dispatch({ type: PieceAction.start });
+    } else {
+      setState(state => {
+        return updateBoard(block.actions ? block.actions : [], state);
+      });
+    }
   }, [block]);
 
   return <GameBoard board={state} />;
