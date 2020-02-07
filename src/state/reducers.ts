@@ -6,10 +6,8 @@ import {
   Piece
 } from "./BlockDrawer";
 import { BoardPiece, DrawableGrid } from "./DrawableGrid";
-import { drawers as iBlockDrawers } from "../state/IBlock";
-import { drawers as jBlockDrawers } from "../state/JBlock";
 
-const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
+// TODO: implement edge detection for right and left movement
 
 export enum PieceAction {
   start,
@@ -19,7 +17,7 @@ export enum PieceAction {
   rotate
 }
 
-export const pickNewPiece = (): BoardPiece => {
+export const pickNewPiece = (pieces: Piece[]): BoardPiece => {
   const pieceIndex = Math.floor(Math.random() * pieces.length);
   const pos = { x: 1, y: 0 };
   const piece = pieces[pieceIndex];
@@ -30,20 +28,22 @@ export const pickNewPiece = (): BoardPiece => {
   };
 };
 
-const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean =>
-  piece.pos.y >= board.length - 1;
+const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean => {
+  const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
+  return actions.find(action => action.y >= board.length - 1) !== undefined;
+}
 
 const getNewDrawer = (state: BoardPiece): BlockDrawer => {
   const idx = state.piece.findIndex(drawer => drawer === state.drawer);
   return state.piece[idx === state.piece.length - 1 ? 0 : idx + 1];
 };
 
-export const pieceReducer = (
+export const pieceReducer = (pieces: Piece[]) => (
   state: BoardPiece,
   action: { type: PieceAction; board?: DrawableGrid }
 ): BoardPiece => {
   const isAtBottom = action.board && atBottom(state, action.board);
-  const newPiece = isAtBottom && pickNewPiece();
+  const newPiece = isAtBottom && pickNewPiece(pieces);
   const newDrawer = action.type === PieceAction.rotate && getNewDrawer(state);
 
   const {

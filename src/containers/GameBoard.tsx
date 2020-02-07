@@ -3,20 +3,23 @@ import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { pieceReducer, pickNewPiece, PieceAction } from "../state/reducers";
+import { drawers as iBlockDrawers } from "../state/IBlock";
+import { drawers as jBlockDrawers } from "../state/JBlock";
+import { Piece } from "../state/BlockDrawer";
 
-// TODO: detect the bottom of the board and stop movement
-// TODO: implement edge detection for right and left movement
 // TODO: fix layout to remove horizontal scroll
 // TODO: impelement the current piece so that the board and the next piece is correct
 
 const board: DrawableGrid = Array(20)
-  .fill(0)
-  .map(() => Array(10).fill(0));
+.fill(0)
+.map(() => Array(10).fill(0));
+
+const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
 
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
   const boardRef = React.useRef(state);
-  const [block, dispatch] = React.useReducer(pieceReducer, pickNewPiece());
+  const [block, dispatch] = React.useReducer(pieceReducer(pieces), pickNewPiece(pieces));
   const [, setTimer] = React.useState();
 
   const spaceBar = useKeyPress({ keyCode: KeyCode.spaceBar });
