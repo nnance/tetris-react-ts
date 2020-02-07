@@ -1,15 +1,16 @@
 import React from "react";
 import NextPiece from "../components/NextPiece";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { drawIBlock, rotateIBlock } from "../state/IBlock";
+import { drawBlock, rotateBlock } from "../state/BlockDrawer";
 import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
-import { drawJBlock, rotateJBlock } from "../state/JBlock";
+import { drawers } from "../state/IBlock";
+import { drawers as jBlockDrawers } from "../state/IBlock";
 
 const emptyGrid: DrawableGrid = Array(5).fill(0).map(x => Array(5).fill(0));
 
 const AllBlocks: ((state: DrawableGrid) => DrawableGrid)[] = [
-  (state): DrawableGrid => updateBoard(drawIBlock(1, 0), state),
-  (state): DrawableGrid => updateBoard(drawJBlock(1, 0), state)
+  (state): DrawableGrid => updateBoard(drawBlock(1, 0, drawers[0]), state),
+  (state): DrawableGrid => updateBoard(drawBlock(1, 0, jBlockDrawers[0]), state)
 ];
 
 // const RotateBlocks: ((state: DrawableGrid) => DrawableGrid)[] = [

@@ -24,19 +24,3 @@ const horizontalJBlock = (
 ];
 
 export const drawers: Piece = [verticalJBlock, horizontalJBlock];
-
-export const drawJBlock = (x: number, y: number): DrawableAction[] => {
-  return horizontalJBlock(x, y, BlockState.on);
-};
-
-export const moveJBlock = (x: number, y: number): DrawableAction[] => {
-  const erase = horizontalJBlock(x, y, BlockState.off);
-  const draw = horizontalJBlock(x, y + 1, BlockState.on);
-  return erase.concat(draw);
-};
-
-export const rotateJBlock = (x: number, y: number): DrawableAction[] => {
-  const erase = horizontalJBlock(x, y, BlockState.off);
-  const draw = verticalJBlock(x, y, BlockState.on);
-  return erase.concat(draw);
-};

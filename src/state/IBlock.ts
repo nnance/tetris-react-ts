@@ -1,5 +1,5 @@
 import { BlockState } from "./DrawableGrid";
-import { DrawableAction, BlockDrawer, Piece } from "./BlockDrawer";
+import { DrawableAction, Piece } from "./BlockDrawer";
 
 const verticalIBlock = (
   x: number,
@@ -24,30 +24,3 @@ const horizontalIBlock = (
 ];
 
 export const drawers: Piece = [verticalIBlock, horizontalIBlock];
-
-export const drawIBlock = (x: number, y: number): DrawableAction[] => {
-  return verticalIBlock(x, y, BlockState.on);
-};
-
-export const moveIBlock = (
-  prevX: number,
-  prevY: number,
-  x: number,
-  y: number,
-  drawer: BlockDrawer
-): DrawableAction[] => {
-  const erase = drawer(prevX, prevY, BlockState.off);
-  const draw = drawer(x, y, BlockState.on);
-  return erase.concat(draw);
-};
-
-export const rotateIBlock = (
-  x: number,
-  y: number,
-  eraser: BlockDrawer,
-  drawer: BlockDrawer
-): DrawableAction[] => {
-  const erase = eraser(x, y, BlockState.off);
-  const draw = drawer(x, y, BlockState.on);
-  return erase.concat(draw);
-};
