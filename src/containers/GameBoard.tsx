@@ -2,27 +2,20 @@ import React from "react";
 import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { pieceReducer, pickNewPiece } from "../state/reducers";
+import { pieceReducer, pickNewPiece, PieceAction } from "../state/reducers";
 
+// TODO: detect the bottom of the board and stop movement
 // TODO: implement edge detection for right and left movement
 // TODO: fix layout to remove horizontal scroll
-// TODO: detect the bottom of the board and stop movement
 // TODO: impelement the current piece so that the board and the next piece is correct
 
 const board: DrawableGrid = Array(20)
   .fill(0)
   .map(() => Array(10).fill(0));
 
-enum PieceAction {
-  start,
-  moveRight,
-  moveLeft,
-  moveDown,
-  rotate
-}
-
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
+  const boardRef = React.useRef(state);
   const [block, dispatch] = React.useReducer(pieceReducer, pickNewPiece());
   const [, setTimer] = React.useState();
 
@@ -35,7 +28,7 @@ const GameBoardContainer: React.FC = () => {
     if (spaceBar) {
       setTimer(
         setInterval(() => {
-          dispatch({ type: PieceAction.moveDown });
+          dispatch({ type: PieceAction.moveDown, board: boardRef.current });
         }, 500)
       );
       dispatch({ type: PieceAction.start });
@@ -51,9 +44,7 @@ const GameBoardContainer: React.FC = () => {
   }, [rightArrow]);
 
   React.useEffect(() => {
-    if (upArrow) {
-      dispatch({ type: PieceAction.rotate });
-    }
+    if (upArrow) dispatch({ type: PieceAction.rotate });
   }, [upArrow]);
 
   React.useEffect(() => {

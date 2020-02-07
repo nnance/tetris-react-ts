@@ -31,7 +31,7 @@ export const pickNewPiece = (): BoardPiece => {
 };
 
 const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean =>
-  piece.pos.y > board.length - 1;
+  piece.pos.y >= board.length - 1;
 
 const getNewDrawer = (state: BoardPiece): BlockDrawer => {
   const idx = state.piece.findIndex(drawer => drawer === state.drawer);
@@ -51,11 +51,16 @@ export const pieceReducer = (
     drawer
   } = state;
 
-  return action.type === (PieceAction.start || PieceAction.moveDown) && newPiece
+  return newPiece
     ? {
         ...newPiece,
         actions: drawBlock(newPiece.pos.x, newPiece.pos.y, newPiece.drawer)
       }
+    : action.type === PieceAction.start
+    ? {
+      ...state,
+      actions: drawBlock(state.pos.x, state.pos.y, state.drawer)
+    }
     : action.type === PieceAction.moveRight
     ? {
         ...state,
