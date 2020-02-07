@@ -2,12 +2,7 @@ import React from "react";
 import { DrawableGrid, updateBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import {
-  drawIBlock,
-  moveIBlock,
-  rotateIBlock,
-  drawers
-} from "../state/IBlock";
+import { drawIBlock, moveIBlock, rotateIBlock, drawers } from "../state/IBlock";
 import { BlockDrawer } from "../state/BlockDrawer";
 
 // TODO: don't draw piece until space bar is pressed
@@ -29,11 +24,52 @@ type GamePiece = {
   prev: Pos;
   current: Pos;
   drawer: BlockDrawer;
+  eraser?: BlockDrawer;
+};
+
+enum PieceAction {
+  moveRight,
+  moveLeft,
+  moveDown,
+  rotate
+}
+
+const pieceReducer = (
+  state: GamePiece,
+  action: { type: PieceAction }
+): GamePiece => {
+  const idx = drawers.findIndex(drawer => drawer === state.drawer);
+
+  return action.type === PieceAction.moveRight
+    ? {
+        ...state,
+        current: { ...state.current, x: state.current.x + 1 },
+        prev: state.current
+      }
+    : action.type === PieceAction.moveLeft
+    ? {
+        ...state,
+        current: { ...state.current, x: state.current.x - 1 },
+        prev: state.current
+      }
+    : action.type === PieceAction.moveDown
+    ? {
+        ...state,
+        current: { ...state.current, y: state.current.y + 1 },
+        prev: state.current
+      }
+    : action.type === PieceAction.rotate
+    ? {
+        ...state,
+        drawer: drawers[idx === drawers.length - 1 ? 0 : idx + 1],
+        eraser: state.drawer
+      }
+    : { ...state };
 };
 
 const GameBoardContainer: React.FC = () => {
   const [state, setState] = React.useState(board);
-  const [pos, setPos] = React.useState<GamePiece>({
+  const [pos, dispatch] = React.useReducer(pieceReducer, {
     prev: { x: 0, y: 0 },
     current: { x: 1, y: 0 },
     drawer: drawers[0]
@@ -48,48 +84,28 @@ const GameBoardContainer: React.FC = () => {
     if (spaceBar) {
       setState(state => updateBoard(drawIBlock(1, 0), state));
       setInterval(() => {
-        setPos(({ current, drawer }) => ({
-          prev: current,
-          current: { x: current.x, y: current.y + 1 },
-          drawer
-        }));
+        dispatch({ type: PieceAction.moveDown });
       }, 500);
     }
   }, [spaceBar]);
 
   React.useEffect(() => {
-    if (leftArrow)
-      setPos(({ current, drawer }) => ({
-        prev: current,
-        current: { x: current.x - 1, y: current.y },
-        drawer
-      }));
+    if (leftArrow) dispatch({ type: PieceAction.moveLeft });
   }, [leftArrow]);
 
   React.useEffect(() => {
-    if (rightArrow)
-      setPos(({ current, drawer }) => ({
-        prev: current,
-        current: { x: current.x + 1, y: current.y },
-        drawer
-      }));
+    if (rightArrow) dispatch({ type: PieceAction.moveRight });
   }, [rightArrow]);
 
   React.useEffect(() => {
     if (upArrow) {
-      const idx = drawers.findIndex(drawer => drawer === pos.drawer);
-      const newDrawer = drawers[idx === drawers.length - 1 ? 0 : idx + 1];
-
-      setState(state =>
-        updateBoard(
-          rotateIBlock(pos.current.x, pos.current.y, pos.drawer, newDrawer),
-          state
-        )
-      );
-      setPos(pos => ({
-        ...pos,
-        drawer: newDrawer
-      }));
+      //   setState(state =>
+      //     updateBoard(
+      //       rotateIBlock(pos.current.x, pos.current.y, pos.drawer, newDrawer),
+      //       state
+      //     )
+      //   );
+      dispatch({ type: PieceAction.rotate });
     }
   }, [upArrow]);
 
