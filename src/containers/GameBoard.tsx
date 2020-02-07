@@ -41,7 +41,7 @@ enum PieceAction {
   rotate
 }
 
-const pieces: Piece[] = [ jBlockDrawers, iBlockDrawers ];
+const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
 
 const pieceReducer = (
   state: GamePiece,
@@ -63,14 +63,14 @@ const pieceReducer = (
     : action.type === PieceAction.moveLeft
     ? {
         ...state,
-        pos: { ...state.pos, x: x - 1 },
-        actions: moveBlock(x, y, x - 1, y, drawer)
+        pos: { ...state.pos, x: x > 0 ? x - 1 : x },
+        actions: x > 0 ? moveBlock(x, y, x - 1, y, drawer) : state.actions
       }
     : action.type === PieceAction.moveDown
     ? {
         ...state,
-        pos: { ...state.pos, y: y + 1 },
-        actions: moveBlock(x, y, x, y + 1, drawer)
+        pos: { ...state.pos, y: y < 19 ? y + 1 : y },
+        actions: y < 19 ? moveBlock(x, y, x, y + 1, drawer) : state.actions
       }
     : action.type === PieceAction.rotate
     ? {
@@ -89,6 +89,7 @@ const GameBoardContainer: React.FC = () => {
     piece: pieces[pieceIndex],
     drawer: pieces[pieceIndex][0]
   });
+  const [timer, setTimer] = React.useState();
 
   const spaceBar = useKeyPress({ keyCode: KeyCode.spaceBar });
   const leftArrow = useKeyPress({ keyCode: KeyCode.leftArrow });
@@ -98,9 +99,10 @@ const GameBoardContainer: React.FC = () => {
   React.useEffect(() => {
     if (spaceBar) {
       setState(state => updateBoard(drawBlock(1, 0, block.drawer), state));
-      setInterval(() => {
+      const interval = setInterval(() => {
         dispatch({ type: PieceAction.moveDown });
       }, 500);
+      setTimer(interval);
     }
   }, [spaceBar, block]);
 
