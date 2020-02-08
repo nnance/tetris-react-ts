@@ -3,7 +3,14 @@ import "./Header.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
-const Header: React.FC<{}> = () => (
+type HeaderProps = {
+  startHandler: () => void;
+  pauseHandler: () => void;
+  resumeHandler: () => void;
+  isPaused: boolean;
+};
+
+const Header: React.FC<HeaderProps> = props => (
   <div id="header">
     <h3>
       Tetris React
@@ -11,16 +18,18 @@ const Header: React.FC<{}> = () => (
         <FontAwesomeIcon icon={faGithub} className="Logo" />
       </a>
     </h3>
-    <button className="btn btn-primary">New Game</button>
+    <button className="btn btn-primary" onClick={props.startHandler}>
+      New Game
+    </button>
     <button
       className="btn btn-primary ml-2"
-      rv-text="data.getPauseButtonText | call data.game_mode"
+      onClick={props.isPaused ? props.resumeHandler : props.pauseHandler}
     >
-      Pause
+      {props.isPaused ? `Resume ` : `Pause`}
     </button>
     <br />
     <div className="d-md-none">
-      <b>FPS:</b> <span rv-text="data.currentfps">60</span>
+      <b>FPS:</b> <span>60</span>
       <b>Level:</b> 0 <b>Lines:</b> 0
     </div>
     <div className="d-none d-md-block">

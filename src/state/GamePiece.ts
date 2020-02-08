@@ -3,6 +3,8 @@ import { cloneDeep } from "lodash";
 type GameRow = [number, number, number, number, number];
 export type GamePiece = [GameRow, GameRow, GameRow, GameRow, GameRow];
 
+// TODO: create drawers for all pieces and delete this file
+
 export const Block: GamePiece = [
   [0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0],

@@ -1,3 +1,4 @@
+import React, { Dispatch } from "react";
 import {
   drawBlock,
   moveBlock,
@@ -6,14 +7,8 @@ import {
   Piece
 } from "./BlockDrawer";
 import { BoardPiece, DrawableGrid } from "./DrawableGrid";
-
-export enum PieceAction {
-  start,
-  moveRight,
-  moveLeft,
-  moveDown,
-  rotate
-}
+import { drawers as iBlockDrawers } from "../state/IBlock";
+import { drawers as jBlockDrawers } from "../state/JBlock";
 
 export const pickNewPiece = (pieces: Piece[]): BoardPiece => {
   const pieceIndex = Math.floor(Math.random() * pieces.length);
@@ -29,28 +24,43 @@ export const pickNewPiece = (pieces: Piece[]): BoardPiece => {
 const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean => {
   const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
   return actions.find(action => action.y >= board.length - 1) !== undefined;
-}
+};
 
 const atLeft = (piece: BoardPiece): boolean => {
   const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
   return actions.find(action => action.x === 0) !== undefined;
-}
+};
 
 const atRight = (piece: BoardPiece, board: DrawableGrid): boolean => {
   const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
   return actions.find(action => action.x >= board[0].length - 1) !== undefined;
-}
+};
 
 const getNewDrawer = (state: BoardPiece): BlockDrawer => {
   const idx = state.piece.findIndex(drawer => drawer === state.drawer);
   return state.piece[idx === state.piece.length - 1 ? 0 : idx + 1];
 };
 
-export const pieceReducer = (pieces: Piece[]) => (
+export enum PieceAction {
+  start,
+  moveRight,
+  moveLeft,
+  moveDown,
+  rotate
+}
+
+export type BoardPieceAction =
+  | { type: PieceAction.start }
+  | { type: PieceAction; board: DrawableGrid };
+
+const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
+
+const pieceReducer = (
   state: BoardPiece,
-  action: { type: PieceAction; board: DrawableGrid }
+  action: BoardPieceAction
 ): BoardPiece => {
-  const isAtBottom = action.type === PieceAction.moveDown && atBottom(state, action.board);
+  const isAtBottom =
+    action.type === PieceAction.moveDown && atBottom(state, action.board);
   const newPiece = isAtBottom && pickNewPiece(pieces);
   const newDrawer = action.type === PieceAction.rotate && getNewDrawer(state);
 
@@ -66,20 +76,22 @@ export const pieceReducer = (pieces: Piece[]) => (
       }
     : action.type === PieceAction.start
     ? {
-      ...state,
-      actions: drawBlock(state.pos.x, state.pos.y, state.drawer)
-    }
+        ...state,
+        actions: drawBlock(state.pos.x, state.pos.y, state.drawer)
+      }
     : action.type === PieceAction.moveRight
     ? {
         ...state,
         pos: { ...state.pos, x: atRight(state, action.board) ? x : x + 1 },
-        actions: moveBlock(x, y, atRight(state, action.board) ? x : x + 1, y, drawer)
+        actions: atRight(state, action.board)
+          ? []
+          : moveBlock(x, y, x + 1, y, drawer)
       }
     : action.type === PieceAction.moveLeft
     ? {
         ...state,
         pos: { ...state.pos, x: atLeft(state) ? x : x - 1 },
-        actions: atLeft(state) ? state.actions : moveBlock(x, y, x - 1, y, drawer)
+        actions: atLeft(state) ? [] : moveBlock(x, y, x - 1, y, drawer)
       }
     : action.type === PieceAction.moveDown
     ? {
@@ -94,4 +106,15 @@ export const pieceReducer = (pieces: Piece[]) => (
         actions: rotateBlock(x, y, drawer, newDrawer)
       }
     : { ...state };
+};
+
+export const useGamePieceState = (
+  piece: Piece
+): [BoardPiece, Dispatch<BoardPieceAction>] => {
+  const boardPiece: BoardPiece = {
+    pos: { x: 1, y: 0 },
+    piece,
+    drawer: piece[0]
+  };
+  return React.useReducer(pieceReducer, boardPiece);
 };
