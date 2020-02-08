@@ -34,20 +34,20 @@ const GameBoardContainer: React.FC = () => {
           dispatch({ type: PieceAction.moveDown, board: boardRef.current });
         }, 500)
       );
-      dispatch({ type: PieceAction.start });
+      dispatch({ type: PieceAction.start, board: boardRef.current });
     }
   }, [spaceBar]);
 
   React.useEffect(() => {
-    if (leftArrow) dispatch({ type: PieceAction.moveLeft });
+    if (leftArrow) dispatch({ type: PieceAction.moveLeft, board: boardRef.current });
   }, [leftArrow]);
 
   React.useEffect(() => {
-    if (rightArrow) dispatch({ type: PieceAction.moveRight });
+    if (rightArrow) dispatch({ type: PieceAction.moveRight, board: boardRef.current });
   }, [rightArrow]);
 
   React.useEffect(() => {
-    if (upArrow) dispatch({ type: PieceAction.rotate });
+    if (upArrow) dispatch({ type: PieceAction.rotate, board: boardRef.current });
   }, [upArrow]);
 
   React.useEffect(() => {

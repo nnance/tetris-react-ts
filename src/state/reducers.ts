@@ -7,8 +7,6 @@ import {
 } from "./BlockDrawer";
 import { BoardPiece, DrawableGrid } from "./DrawableGrid";
 
-// TODO: implement edge detection for right and left movement
-
 export enum PieceAction {
   start,
   moveRight,
@@ -33,6 +31,16 @@ const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean => {
   return actions.find(action => action.y >= board.length - 1) !== undefined;
 }
 
+const atLeft = (piece: BoardPiece): boolean => {
+  const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
+  return actions.find(action => action.x === 0) !== undefined;
+}
+
+const atRight = (piece: BoardPiece, board: DrawableGrid): boolean => {
+  const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
+  return actions.find(action => action.x >= board[0].length - 1) !== undefined;
+}
+
 const getNewDrawer = (state: BoardPiece): BlockDrawer => {
   const idx = state.piece.findIndex(drawer => drawer === state.drawer);
   return state.piece[idx === state.piece.length - 1 ? 0 : idx + 1];
@@ -40,9 +48,9 @@ const getNewDrawer = (state: BoardPiece): BlockDrawer => {
 
 export const pieceReducer = (pieces: Piece[]) => (
   state: BoardPiece,
-  action: { type: PieceAction; board?: DrawableGrid }
+  action: { type: PieceAction; board: DrawableGrid }
 ): BoardPiece => {
-  const isAtBottom = action.board && atBottom(state, action.board);
+  const isAtBottom = action.type === PieceAction.moveDown && atBottom(state, action.board);
   const newPiece = isAtBottom && pickNewPiece(pieces);
   const newDrawer = action.type === PieceAction.rotate && getNewDrawer(state);
 
@@ -64,14 +72,14 @@ export const pieceReducer = (pieces: Piece[]) => (
     : action.type === PieceAction.moveRight
     ? {
         ...state,
-        pos: { ...state.pos, x: x + 1 },
-        actions: moveBlock(x, y, x + 1, y, drawer)
+        pos: { ...state.pos, x: atRight(state, action.board) ? x : x + 1 },
+        actions: moveBlock(x, y, atRight(state, action.board) ? x : x + 1, y, drawer)
       }
     : action.type === PieceAction.moveLeft
     ? {
         ...state,
-        pos: { ...state.pos, x: x > 0 ? x - 1 : x },
-        actions: x > 0 ? moveBlock(x, y, x - 1, y, drawer) : state.actions
+        pos: { ...state.pos, x: atLeft(state) ? x : x - 1 },
+        actions: atLeft(state) ? state.actions : moveBlock(x, y, x - 1, y, drawer)
       }
     : action.type === PieceAction.moveDown
     ? {
