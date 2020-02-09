@@ -5,9 +5,6 @@ import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
 import { GameState } from "../state/game";
 
-// TODO: fix layout to remove horizontal scroll
-// TODO: impelement the current piece so that the board and the next piece is correct
-
 const board: DrawableGrid = Array(20)
   .fill(0)
   .map(() => Array(10).fill(0));

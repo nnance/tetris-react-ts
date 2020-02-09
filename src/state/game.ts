@@ -9,7 +9,6 @@ export type GameState = {
   paused: boolean;
   current: Piece;
   next: Piece;
-  fps: number;
   level: number;
   lines: number;
 };
@@ -22,28 +21,16 @@ const pickNewPiece = (): Piece => {
 export enum GameActionType {
   start,
   pause,
-  end,
-  setFPS
+  end
 }
 
-type SetFPSAction = {
-  type: GameActionType.setFPS;
-  fps: number;
-};
-
-export type GameAction = SetFPSAction | { type: GameActionType };
-
-function isSetFPSAction(action: GameAction): action is SetFPSAction {
-  return (action as SetFPSAction).type === GameActionType.setFPS;
-}
+export type GameAction = { type: GameActionType };
 
 const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
     ? { ...state, paused: true }
     : action.type === GameActionType.start
     ? { ...state, paused: false }
-    : isSetFPSAction(action)
-    ? { ...state, fps: action.fps }
     : { ...state };
 };
 
@@ -52,7 +39,6 @@ const useGameState = (): [GameState, Dispatch<GameAction>] => {
     paused: true,
     current: pickNewPiece(),
     next: pickNewPiece(),
-    fps: 60,
     level: 1,
     lines: 0
   });
