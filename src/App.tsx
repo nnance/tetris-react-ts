@@ -8,6 +8,13 @@ import useGameState, { GameActionType } from "./state/game";
 import { useGamePieceState } from "./state/reducers";
 import useFPS from "./hooks/useFPS";
 
+// TODO: fix background color
+// TODO: separate controls from status
+// TODO: make status into a table
+// TODO: investigate CSS modules vs JS Styling
+// TODO: make common CSS module for block colors etc
+// TODO: major bug with leaving artifacts on the board
+
 const App: React.FC<{}> = () => {
   const [state, dispatch] = useGameState();
   const [block, pieceDispatch] = useGamePieceState(state.current);

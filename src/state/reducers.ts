@@ -7,8 +7,13 @@ import {
   Piece
 } from "./BlockDrawer";
 import { BoardPiece, DrawableGrid } from "./DrawableGrid";
-import { drawers as iBlockDrawers } from "../state/IBlock";
+import { drawers as lBlockDrawers } from "../state/LBlock";
 import { drawers as jBlockDrawers } from "../state/JBlock";
+
+// TODO: block rotation if it will result in piece being off the grid
+// TODO: implement collision detection with previous pieces
+// TODO: implement look ahead piece
+// TODO: pick new piece needs to be delegated to the game
 
 export const pickNewPiece = (pieces: Piece[]): BoardPiece => {
   const pieceIndex = Math.floor(Math.random() * pieces.length);
@@ -53,7 +58,7 @@ export type BoardPieceAction =
   | { type: PieceAction.start }
   | { type: PieceAction; board: DrawableGrid };
 
-const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
+const pieces: Piece[] = [jBlockDrawers, lBlockDrawers];
 
 const pieceReducer = (
   state: BoardPiece,

@@ -1,9 +1,24 @@
 import React, { Dispatch } from "react";
 import { drawers as iBlockDrawers } from "./IBlock";
 import { drawers as jBlockDrawers } from "./JBlock";
+import { drawers as zBlockDrawers } from "./ZBlock";
+import { drawers as tBlockDrawers } from "./TBlock";
+import { drawers as sBlockDrawers } from "./SBlock";
+import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece } from "./BlockDrawer";
 
-const pieces: Piece[] = [jBlockDrawers, iBlockDrawers];
+// TODO: Next piece is not updating on the game board
+// TODO: clicking new game doesn't reset the game
+// TODO: some game pieces have horizontal and vertical flipped
+
+const pieces: Piece[] = [
+  jBlockDrawers,
+  iBlockDrawers,
+  zBlockDrawers,
+  tBlockDrawers,
+  sBlockDrawers,
+  lBlockDrawers
+];
 
 export type GameState = {
   paused: boolean;

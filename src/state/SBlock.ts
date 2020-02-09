@@ -6,10 +6,10 @@ const verticalBlock = (
   y: number,
   state: BlockState
 ): DrawableAction[] => [
-  { x, y, state },
+  { x: x + 1, y, state },
+  { x: x + 2, y, state },
   { x, y: y + 1, state },
-  { x, y: y + 2, state },
-  { x, y: y + 3, state }
+  { x: x + 1, y: y + 1, state }
 ];
 
 const horizontalBlock = (
@@ -18,9 +18,9 @@ const horizontalBlock = (
   state: BlockState
 ): DrawableAction[] => [
   { x, y, state },
-  { x: x + 1, y, state },
-  { x: x + 2, y, state },
-  { x: x + 3, y, state }
+  { x, y: y + 1, state },
+  { x: x + 1, y: y + 1, state },
+  { x: x + 1, y: y + 2, state }
 ];
 
 export const drawers: Piece = [verticalBlock, horizontalBlock];
