@@ -8,12 +8,22 @@ import {
   faArrowRight
 } from "@fortawesome/free-solid-svg-icons";
 
-const Controls: React.FC = () => (
+type ControlProps = {
+  fps: number;
+  level: number;
+  lines: number;
+};
+
+const Controls: React.FC<ControlProps> = props => (
   <div className="col-md-4 d-none d-md-block Col">
-    <b>FPS:</b> <span rv-text="data.currentfps">61</span>
+    <b>FPS:</b> <span>{props.fps}</span>
     <br />
-    <b>Level:</b> 0<br />
-    <b>Lines:</b> 0<br />
+    <b>Level:</b>
+    {props.level}
+    <br />
+    <b>Lines:</b>
+    {props.lines}
+    <br />
     <br />
     <br />
     <br />
