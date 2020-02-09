@@ -3,7 +3,7 @@ import { DrawableGrid, updateBoard, BoardPiece } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
-import { BoardState } from "../state/board";
+import { GameState } from "../state/game";
 
 // TODO: fix layout to remove horizontal scroll
 // TODO: impelement the current piece so that the board and the next piece is correct
@@ -13,7 +13,7 @@ const board: DrawableGrid = Array(20)
   .map(() => Array(10).fill(0));
 
 type GameBoardProps = {
-  game: BoardState;
+  game: GameState;
   block: BoardPiece;
   dispatch: Dispatch<BoardPieceAction>;
 };
@@ -49,19 +49,19 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
   }, [game, timer]);
 
   React.useEffect(() => {
-    if (leftArrow)
+    if (leftArrow && !game.paused)
       dispatch({ type: PieceAction.moveLeft, board: boardRef.current });
-  }, [leftArrow, dispatch]);
+  }, [game, leftArrow, dispatch]);
 
   React.useEffect(() => {
-    if (rightArrow)
+    if (rightArrow && !game.paused)
       dispatch({ type: PieceAction.moveRight, board: boardRef.current });
-  }, [rightArrow, dispatch]);
+  }, [game, rightArrow, dispatch]);
 
   React.useEffect(() => {
-    if (upArrow)
+    if (upArrow && !game.paused)
       dispatch({ type: PieceAction.rotate, board: boardRef.current });
-  }, [upArrow, dispatch]);
+  }, [game, upArrow, dispatch]);
 
   React.useEffect(() => {
     setState(state => {

@@ -4,32 +4,27 @@ import Header from "./components/Header";
 import Controls from "./components/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
-import useBoardState, { BoardAction } from "./state/board";
+import useGameState, { GameActionType } from "./state/game";
 import { useGamePieceState } from "./state/reducers";
+import useFPS from "./hooks/useFPS";
 
 const App: React.FC<{}> = () => {
-  const [state, dispatch] = useBoardState();
+  const [state, dispatch] = useGameState();
   const [block, pieceDispatch] = useGamePieceState(state.current);
+  const fps = useFPS();
 
   return (
-    <div id="main" className="App">
+    <div id="main" className="App container-fluid">
       <Header
-        startHandler={(): void => dispatch(BoardAction.start)}
-        pauseHandler={(): void => dispatch(BoardAction.pause)}
-        resumeHandler={(): void => dispatch(BoardAction.start)}
+        startHandler={(): void => dispatch({ type: GameActionType.start })}
+        pauseHandler={(): void => dispatch({ type: GameActionType.pause })}
+        resumeHandler={(): void => dispatch({ type: GameActionType.start })}
         isPaused={state.paused}
       />
       <div id="gameArea" className="row">
-        <Controls />
+        <Controls fps={fps} level={state.level} lines={state.lines} />
         <GameBoard game={state} block={block} dispatch={pieceDispatch} />
-        <div id="nextpiece" className="col-md-4 col-4">
-          <div className="d-none d-md-block">
-            <b>Next Piece</b>
-            <br />
-          </div>
-          <br />
-          <NextPiece piece={state.next} />
-        </div>
+        <NextPiece piece={state.next} />
       </div>
     </div>
   );
