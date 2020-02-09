@@ -8,7 +8,6 @@ import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece } from "./BlockDrawer";
 
 // TODO: clicking new game doesn't reset the game
-// TODO: some game pieces have horizontal and vertical flipped
 
 const pieces: Piece[] = [
   jBlockDrawers,

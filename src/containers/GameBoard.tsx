@@ -34,7 +34,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
         if (timer) clearInterval(timer);
         return setInterval(() => {
           dispatch({ type: PieceAction.moveDown, board: boardRef.current });
-        }, 100);
+        }, 500);
       });
       dispatch({ type: PieceAction.start, board: boardRef.current });
     }
