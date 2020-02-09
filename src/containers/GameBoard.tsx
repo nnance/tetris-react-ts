@@ -22,7 +22,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
 }) => {
   const [state, setState] = React.useState(board);
   const boardRef = React.useRef(state);
-  const [timer, setTimer] = React.useState();
+  const [timer, setTimer] = React.useState<NodeJS.Timeout>();
 
   const leftArrow = useKeyPress({ keyCode: KeyCode.leftArrow });
   const rightArrow = useKeyPress({ keyCode: KeyCode.rightArrow });
@@ -30,19 +30,18 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
 
   React.useEffect(() => {
     if (!game.paused) {
-      setTimer(
-        setInterval(() => {
+      setTimer(timer => {
+        if (timer) clearInterval(timer);
+        return setInterval(() => {
           dispatch({ type: PieceAction.moveDown, board: boardRef.current });
-        }, 500)
-      );
+        }, 100);
+      });
       dispatch({ type: PieceAction.start, board: boardRef.current });
     }
   }, [game, dispatch]);
 
   React.useEffect(() => {
-    if (game.paused && timer) {
-      clearInterval(timer);
-    }
+    if (game.paused && timer) clearInterval(timer);
   }, [game, timer]);
 
   React.useEffect(() => {

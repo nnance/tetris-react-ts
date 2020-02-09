@@ -7,7 +7,6 @@ import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece } from "./BlockDrawer";
 
-// TODO: Next piece is not updating on the game board
 // TODO: clicking new game doesn't reset the game
 // TODO: some game pieces have horizontal and vertical flipped
 
@@ -36,6 +35,7 @@ const pickNewPiece = (): Piece => {
 export enum GameActionType {
   start,
   pause,
+  nextPiece,
   end
 }
 
@@ -46,6 +46,8 @@ const reducer = (state: GameState, action: GameAction): GameState => {
     ? { ...state, paused: true }
     : action.type === GameActionType.start
     ? { ...state, paused: false }
+    : action.type === GameActionType.nextPiece
+    ? { ...state, current: state.next, next: pickNewPiece() }
     : { ...state };
 };
 

@@ -17,8 +17,14 @@ import useFPS from "./hooks/useFPS";
 
 const App: React.FC<{}> = () => {
   const [state, dispatch] = useGameState();
-  const [block, pieceDispatch] = useGamePieceState(state.current);
+  const [block, pieceDispatch] = useGamePieceState(state);
   const fps = useFPS();
+
+  React.useEffect(() => {
+    if (block.isAtBottom) {
+      dispatch({ type: GameActionType.nextPiece });
+    }
+  }, [block, dispatch]);
 
   return (
     <div id="main" className="App container-fluid">

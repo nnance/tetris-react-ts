@@ -7,24 +7,11 @@ import {
   Piece
 } from "./BlockDrawer";
 import { BoardPiece, DrawableGrid } from "./DrawableGrid";
-import { drawers as lBlockDrawers } from "../state/LBlock";
-import { drawers as jBlockDrawers } from "../state/JBlock";
+import { GameState } from "./game";
 
 // TODO: block rotation if it will result in piece being off the grid
 // TODO: implement collision detection with previous pieces
 // TODO: implement look ahead piece
-// TODO: pick new piece needs to be delegated to the game
-
-export const pickNewPiece = (pieces: Piece[]): BoardPiece => {
-  const pieceIndex = Math.floor(Math.random() * pieces.length);
-  const pos = { x: 1, y: 0 };
-  const piece = pieces[pieceIndex];
-  return {
-    pos,
-    piece,
-    drawer: piece[0]
-  };
-};
 
 const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean => {
   const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
@@ -51,14 +38,16 @@ export enum PieceAction {
   moveRight,
   moveLeft,
   moveDown,
+  setPiece,
   rotate
 }
 
+type SetPieceAction = { type: PieceAction.setPiece; piece: Piece };
+
 export type BoardPieceAction =
   | { type: PieceAction.start }
+  | SetPieceAction
   | { type: PieceAction; board: DrawableGrid };
-
-const pieces: Piece[] = [jBlockDrawers, lBlockDrawers];
 
 const pieceReducer = (
   state: BoardPiece,
@@ -66,7 +55,6 @@ const pieceReducer = (
 ): BoardPiece => {
   const isAtBottom =
     action.type === PieceAction.moveDown && atBottom(state, action.board);
-  const newPiece = isAtBottom && pickNewPiece(pieces);
   const newDrawer = action.type === PieceAction.rotate && getNewDrawer(state);
 
   const {
@@ -74,10 +62,14 @@ const pieceReducer = (
     drawer
   } = state;
 
-  return newPiece
+  return isAtBottom
+    ? { ...state, isAtBottom: true }
+    : action.type === PieceAction.setPiece
     ? {
-        ...newPiece,
-        actions: drawBlock(newPiece.pos.x, newPiece.pos.y, newPiece.drawer)
+        pos: { x: 1, y: 0 },
+        piece: (action as SetPieceAction).piece,
+        isAtBottom: false,
+        drawer: (action as SetPieceAction).piece[0]
       }
     : action.type === PieceAction.start
     ? {
@@ -114,12 +106,20 @@ const pieceReducer = (
 };
 
 export const useGamePieceState = (
-  piece: Piece
+  gameState: GameState
 ): [BoardPiece, Dispatch<BoardPieceAction>] => {
   const boardPiece: BoardPiece = {
     pos: { x: 1, y: 0 },
-    piece,
-    drawer: piece[0]
+    piece: gameState.current,
+    isAtBottom: false,
+    drawer: gameState.current[0]
   };
-  return React.useReducer(pieceReducer, boardPiece);
+  const [piece, dispatch] = React.useReducer(pieceReducer, boardPiece);
+
+  React.useEffect(() => {
+    if (piece.isAtBottom) {
+      dispatch({ type: PieceAction.setPiece, piece: gameState.next });
+    }
+  }, [gameState, piece]);
+  return [piece, dispatch];
 };

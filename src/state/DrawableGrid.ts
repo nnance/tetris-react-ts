@@ -18,6 +18,7 @@ export type BoardPiece = {
   pos: Pos;
   piece: Piece;
   drawer: BlockDrawer;
+  isAtBottom: boolean;
   actions?: DrawableAction[];
 };
 
