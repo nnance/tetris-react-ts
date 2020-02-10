@@ -5,6 +5,9 @@ import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
 import { GameState } from "../state/game";
 
+//TODO: support down arrow to advance a piece
+//TODO: detect when a line is completed
+
 type GameBoardProps = {
   boardState: [
     DrawableGrid,
