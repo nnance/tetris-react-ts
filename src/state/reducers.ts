@@ -9,7 +9,6 @@ import {
 import { BoardPiece, DrawableGrid } from "./DrawableGrid";
 import { GameState } from "./game";
 
-// TODO: block rotation if it will result in piece being off the grid
 // TODO: implement collision detection with previous pieces
 // TODO: implement look ahead piece
 
@@ -49,13 +48,22 @@ export type BoardPieceAction =
   | SetPieceAction
   | { type: PieceAction; board: DrawableGrid };
 
+const rotationBlocked = (piece: BoardPiece, board: DrawableGrid): boolean => {
+  const drawer = getNewDrawer(piece);
+  const actions = drawBlock(piece.pos.x, piece.pos.y, drawer);
+  return actions.find(action => action.x >= board[0].length) !== undefined;
+};
+
 const pieceReducer = (
   state: BoardPiece,
   action: BoardPieceAction
 ): BoardPiece => {
   const isAtBottom =
     action.type === PieceAction.moveDown && atBottom(state, action.board);
-  const newDrawer = action.type === PieceAction.rotate && getNewDrawer(state);
+  const newDrawer =
+    action.type === PieceAction.rotate &&
+    !rotationBlocked(state, action.board) &&
+    getNewDrawer(state);
 
   const {
     pos: { x, y },
