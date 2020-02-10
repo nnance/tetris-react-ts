@@ -4,9 +4,15 @@ import {
   moveBlock,
   rotateBlock,
   BlockDrawer,
-  Piece
+  Piece,
+  DrawableAction
 } from "./BlockDrawer";
-import { BoardPiece, DrawableGrid, BlockState } from "./DrawableGrid";
+import {
+  BoardPiece,
+  DrawableGrid,
+  BlockState,
+  updateBoard
+} from "./DrawableGrid";
 import { GameState } from "./game";
 
 // TODO: implement collision detection with previous pieces
@@ -38,17 +44,17 @@ const rotationBlocked = (piece: BoardPiece, board: DrawableGrid): boolean => {
   return actions.find(action => action.x >= board[0].length) !== undefined;
 };
 
-const collisionDetected = (piece: BoardPiece, board: DrawableGrid): boolean => {
-  const actions = drawBlock(piece.pos.x, piece.pos.y + 1, piece.drawer);
-  const lowestPos = actions.reduce(
-    (prev, current) => (current.y > prev ? current.y : prev),
-    0
+const didCollide = (
+  actions: DrawableAction[],
+  board: DrawableGrid
+): boolean => {
+  const offActions = actions.filter(action => action.state === BlockState.off);
+  const onActions = actions.filter(action => action.state === BlockState.on);
+  const newBoard = updateBoard(offActions, board);
+  const collisions = onActions.find(
+    action => newBoard[action.y][action.x] === BlockState.on
   );
-  const bottomEdges = actions.filter(action => action.y === lowestPos);
-  const blockState = bottomEdges.find(
-    action => board[action.y][action.x] === BlockState.on
-  );
-  return blockState !== undefined;
+  return collisions !== undefined;
 };
 
 export enum PieceAction {
@@ -67,17 +73,37 @@ export type BoardPieceAction =
   | SetPieceAction
   | { type: PieceAction; board: DrawableGrid };
 
+const moveBlockDown = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
+  moveBlock(pos.x, pos.y, pos.x, pos.y + 1, drawer);
+
+const moveBlockLeft = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
+  moveBlock(pos.x, pos.y, pos.x - 1, pos.y, drawer);
+
+const moveBlockRight = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
+  moveBlock(pos.x, pos.y, pos.x + 1, pos.y, drawer);
+
 const pieceReducer = (
   state: BoardPiece,
   action: BoardPieceAction
 ): BoardPiece => {
   const isAtBottom =
     action.type === PieceAction.moveDown &&
-    (atBottom(state, action.board) || collisionDetected(state, action.board));
+    (atBottom(state, action.board) ||
+      didCollide(moveBlockDown(state), action.board));
+
   const newDrawer =
     action.type === PieceAction.rotate &&
     !rotationBlocked(state, action.board) &&
     getNewDrawer(state);
+
+  const farRight =
+    action.type === PieceAction.moveRight &&
+    (atRight(state, action.board) ||
+      didCollide(moveBlockRight(state), action.board));
+
+  const farLeft =
+    action.type === PieceAction.moveLeft &&
+    (atLeft(state) || didCollide(moveBlockLeft(state), action.board));
 
   const {
     pos: { x, y },
@@ -98,19 +124,17 @@ const pieceReducer = (
         ...state,
         actions: drawBlock(state.pos.x, state.pos.y, state.drawer)
       }
-    : action.type === PieceAction.moveRight
+    : action.type === PieceAction.moveRight && !farRight
     ? {
         ...state,
-        pos: { ...state.pos, x: atRight(state, action.board) ? x : x + 1 },
-        actions: atRight(state, action.board)
-          ? []
-          : moveBlock(x, y, x + 1, y, drawer)
+        pos: { ...state.pos, x: x + 1 },
+        actions: moveBlock(x, y, x + 1, y, drawer)
       }
-    : action.type === PieceAction.moveLeft
+    : action.type === PieceAction.moveLeft && !farLeft
     ? {
         ...state,
-        pos: { ...state.pos, x: atLeft(state) ? x : x - 1 },
-        actions: atLeft(state) ? [] : moveBlock(x, y, x - 1, y, drawer)
+        pos: { ...state.pos, x: x - 1 },
+        actions: moveBlock(x, y, x - 1, y, drawer)
       }
     : action.type === PieceAction.moveDown
     ? {
