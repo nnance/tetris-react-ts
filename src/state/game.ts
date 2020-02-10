@@ -7,8 +7,6 @@ import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece } from "./BlockDrawer";
 
-// TODO: clicking new game doesn't reset the game
-
 const pieces: Piece[] = [
   jBlockDrawers,
   iBlockDrawers,

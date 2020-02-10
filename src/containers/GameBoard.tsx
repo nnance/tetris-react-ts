@@ -5,22 +5,23 @@ import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
 import { GameState } from "../state/game";
 
-const board: DrawableGrid = Array(20)
-  .fill(0)
-  .map(() => Array(10).fill(0));
-
 type GameBoardProps = {
+  boardState: [
+    DrawableGrid,
+    React.Dispatch<React.SetStateAction<DrawableGrid>>
+  ];
   game: GameState;
-  block: BoardPiece;
-  dispatch: Dispatch<BoardPieceAction>;
+  blockState: [BoardPiece, Dispatch<BoardPieceAction>];
 };
 
 const GameBoardContainer: React.FC<GameBoardProps> = ({
   game,
-  block,
-  dispatch
+  boardState,
+  blockState
 }) => {
-  const [state, setState] = React.useState(board);
+  const [state, setState] = boardState;
+  const [block, dispatch] = blockState;
+
   const boardRef = React.useRef(state);
   const [timer, setTimer] = React.useState<NodeJS.Timeout>();
 
@@ -63,7 +64,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
     setState(state => {
       return updateBoard(block.actions ? block.actions : [], state);
     });
-  }, [block]);
+  }, [block, setState]);
 
   return <GameBoard board={state} />;
 };
