@@ -1,12 +1,12 @@
 import React from "react";
-import "./NextPiece.css";
 import { DrawableGrid } from "../state/DrawableGrid";
+import { PieceBlock, EmptyBlock } from "./GameBoard";
 
 type NextPieceProps = { grid: DrawableGrid };
 
 const NextPiece: React.FC<NextPieceProps> = props => {
   return (
-    <div className="col-md-4 col-4 nextpiece">
+    <div className="col-md-4 col-4" style={{ textAlign: "left" }}>
       <div className="d-none d-md-block">
         <b>Next Piece</b>
         <br />
@@ -19,7 +19,7 @@ const NextPiece: React.FC<NextPieceProps> = props => {
               {row.map((col, idx) => (
                 <td
                   key={`${rowIdx}, ${idx}`}
-                  className={col ? "PieceBlock" : "EmptyBlock"}
+                  style={col ? PieceBlock : EmptyBlock}
                 >
                   {" "}
                 </td>

@@ -1,5 +1,4 @@
 import React from "react";
-import "./Header.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 
@@ -15,7 +14,14 @@ const Header: React.FC<HeaderProps> = props => (
     <h3>
       Tetris React
       <a href="https://github.com/nbarkhina/TetrisJS">
-        <FontAwesomeIcon icon={faGithub} className="Logo" />
+        <FontAwesomeIcon
+          icon={faGithub}
+          style={{
+            height: "25px",
+            paddingBottom: "5px",
+            paddingLeft: "10px"
+          }}
+        />
       </a>
     </h3>
     <button className="btn btn-primary" onClick={props.startHandler}>

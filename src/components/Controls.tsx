@@ -1,5 +1,4 @@
 import React from "react";
-import "./Controls.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowUp,
@@ -12,10 +11,11 @@ type ControlProps = {
   fps: number;
   level: number;
   lines: number;
+  message?: string;
 };
 
 const Controls: React.FC<ControlProps> = props => (
-  <div className="col-md-4 d-none d-md-block Col">
+  <div className="col-md-4 d-none d-md-block" style={{ textAlign: "right" }}>
     <b>FPS:</b> <span>{props.fps}</span>
     <br />
     <b>Level:</b>
@@ -27,15 +27,15 @@ const Controls: React.FC<ControlProps> = props => (
     <br />
     <br />
     <br />
-    <div className="MoveCol">
-      <table className="MoveTable">
+    <div style={{ float: "right" }}>
+      <table style={{ textAlign: "center" }}>
         <tbody>
           <tr>
             <td>
               <FontAwesomeIcon icon={faArrowUp} />
             </td>
             <td>
-              <div className="RotationCol"></div>
+              <div style={{ width: "20px" }}></div>
             </td>
             <td>Rotate</td>
           </tr>
@@ -74,7 +74,9 @@ const Controls: React.FC<ControlProps> = props => (
         </tbody>
       </table>
     </div>
-    <section className="MessageCol" rv-html="data.message"></section>
+    <section style={{ position: "relative", right: "20px" }}>
+      {props.message}
+    </section>
   </div>
 );
 

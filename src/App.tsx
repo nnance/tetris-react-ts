@@ -1,5 +1,4 @@
 import React from "react";
-import "./App.css";
 import Header from "./components/Header";
 import Controls from "./components/Controls";
 import GameBoard from "./containers/GameBoard";
@@ -12,8 +11,6 @@ import { DrawableGrid } from "./state/DrawableGrid";
 // TODO: fix background color
 // TODO: separate controls from status
 // TODO: make status into a table
-// TODO: investigate CSS modules vs JS Styling
-// TODO: make common CSS module for block colors etc
 // TODO: major bug with leaving artifacts on the board
 
 const emptyBoard: DrawableGrid = Array(20)
@@ -39,14 +36,22 @@ const App: React.FC<{}> = () => {
   };
 
   return (
-    <div id="main" className="App container-fluid">
+    <div
+      id="main"
+      className="container-fluid"
+      style={{
+        textAlign: "center",
+        height: "100%",
+        backgroundColor: "rgb(231, 245, 255)"
+      }}
+    >
       <Header
         startHandler={startGame}
         pauseHandler={(): void => dispatch({ type: GameActionType.pause })}
         resumeHandler={(): void => dispatch({ type: GameActionType.start })}
         isPaused={state.paused}
       />
-      <div id="gameArea" className="row">
+      <div className="row">
         <Controls fps={fps} level={state.level} lines={state.lines} />
         <GameBoard
           game={state}
