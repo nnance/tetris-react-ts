@@ -6,7 +6,7 @@ import {
   BlockDrawer,
   Piece
 } from "./BlockDrawer";
-import { BoardPiece, DrawableGrid } from "./DrawableGrid";
+import { BoardPiece, DrawableGrid, BlockState } from "./DrawableGrid";
 import { GameState } from "./game";
 
 // TODO: implement collision detection with previous pieces
@@ -32,6 +32,25 @@ const getNewDrawer = (state: BoardPiece): BlockDrawer => {
   return state.piece[idx === state.piece.length - 1 ? 0 : idx + 1];
 };
 
+const rotationBlocked = (piece: BoardPiece, board: DrawableGrid): boolean => {
+  const drawer = getNewDrawer(piece);
+  const actions = drawBlock(piece.pos.x, piece.pos.y, drawer);
+  return actions.find(action => action.x >= board[0].length) !== undefined;
+};
+
+const collisionDetected = (piece: BoardPiece, board: DrawableGrid): boolean => {
+  const actions = drawBlock(piece.pos.x, piece.pos.y + 1, piece.drawer);
+  const lowestPos = actions.reduce(
+    (prev, current) => (current.y > prev ? current.y : prev),
+    0
+  );
+  const bottomEdges = actions.filter(action => action.y === lowestPos);
+  const blockState = bottomEdges.find(
+    action => board[action.y][action.x] === BlockState.on
+  );
+  return blockState !== undefined;
+};
+
 export enum PieceAction {
   start,
   moveRight,
@@ -48,18 +67,13 @@ export type BoardPieceAction =
   | SetPieceAction
   | { type: PieceAction; board: DrawableGrid };
 
-const rotationBlocked = (piece: BoardPiece, board: DrawableGrid): boolean => {
-  const drawer = getNewDrawer(piece);
-  const actions = drawBlock(piece.pos.x, piece.pos.y, drawer);
-  return actions.find(action => action.x >= board[0].length) !== undefined;
-};
-
 const pieceReducer = (
   state: BoardPiece,
   action: BoardPieceAction
 ): BoardPiece => {
   const isAtBottom =
-    action.type === PieceAction.moveDown && atBottom(state, action.board);
+    action.type === PieceAction.moveDown &&
+    (atBottom(state, action.board) || collisionDetected(state, action.board));
   const newDrawer =
     action.type === PieceAction.rotate &&
     !rotationBlocked(state, action.board) &&

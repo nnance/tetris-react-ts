@@ -42,6 +42,10 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
   }, [game, dispatch]);
 
   React.useEffect(() => {
+    boardRef.current = state;
+  }, [state]);
+
+  React.useEffect(() => {
     if (game.paused && timer) clearInterval(timer);
   }, [game, timer]);
 

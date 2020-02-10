@@ -8,7 +8,6 @@ import { useGamePieceState, PieceAction } from "./state/reducers";
 import { DrawableGrid } from "./state/DrawableGrid";
 
 // TODO: fix background color
-// TODO: make status into a table
 // TODO: major bug with leaving artifacts on the board
 
 const emptyBoard: DrawableGrid = Array(20)
