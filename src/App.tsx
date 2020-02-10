@@ -1,15 +1,13 @@
 import React from "react";
 import Header from "./components/Header";
-import Controls from "./components/Controls";
+import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
 import useGameState, { GameActionType } from "./state/game";
 import { useGamePieceState, PieceAction } from "./state/reducers";
-import useFPS from "./hooks/useFPS";
 import { DrawableGrid } from "./state/DrawableGrid";
 
 // TODO: fix background color
-// TODO: separate controls from status
 // TODO: make status into a table
 // TODO: major bug with leaving artifacts on the board
 
@@ -21,7 +19,6 @@ const App: React.FC<{}> = () => {
   const [state, dispatch] = useGameState();
   const [board, setBoard] = React.useState(emptyBoard);
   const [block, pieceDispatch] = useGamePieceState(state);
-  const fps = useFPS();
 
   React.useEffect(() => {
     if (block.isAtBottom) {
@@ -52,7 +49,7 @@ const App: React.FC<{}> = () => {
         isPaused={state.paused}
       />
       <div className="row">
-        <Controls fps={fps} level={state.level} lines={state.lines} />
+        <Controls level={state.level} lines={state.lines} />
         <GameBoard
           game={state}
           boardState={[board, setBoard]}
