@@ -5,7 +5,6 @@ import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
 import { GameState } from "../state/game";
 
-//TODO: support down arrow to advance a piece
 //TODO: detect when a line is completed
 
 type GameBoardProps = {
@@ -31,6 +30,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
   const leftArrow = useKeyPress({ keyCode: KeyCode.leftArrow });
   const rightArrow = useKeyPress({ keyCode: KeyCode.rightArrow });
   const upArrow = useKeyPress({ keyCode: KeyCode.upArrow });
+  const downArrow = useKeyPress({ keyCode: KeyCode.downArrow });
 
   React.useEffect(() => {
     if (!game.paused) {
@@ -66,6 +66,11 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
     if (upArrow && !game.paused)
       dispatch({ type: PieceAction.rotate, board: boardRef.current });
   }, [game, upArrow, dispatch]);
+
+  React.useEffect(() => {
+    if (downArrow && !game.paused)
+      dispatch({ type: PieceAction.moveDown, board: boardRef.current });
+  }, [game, downArrow, dispatch]);
 
   React.useEffect(() => {
     setState(state => {
