@@ -33,3 +33,18 @@ export const updateBoard = (
     return prev;
   }, cloneDeep(grid));
 };
+
+export const drawBoard = (height: number, width: number) => (
+  actions: DrawableAction[]
+) => {
+  const grid = Array(height)
+    .fill(BlockState.off)
+    .map(() => Array(width).fill(BlockState.off));
+
+  return actions.reduce((prev, { x, y, state }) => {
+    if (x > -1 && y > -1 && y < grid.length && x < grid[y].length) {
+      prev[y][x] = state;
+    }
+    return prev;
+  }, grid);
+};

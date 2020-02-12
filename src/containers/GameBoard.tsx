@@ -1,5 +1,5 @@
 import React, { Dispatch } from "react";
-import { DrawableGrid, updateBoard, BoardPiece } from "../state/DrawableGrid";
+import { DrawableGrid, BoardPiece, drawBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
@@ -16,12 +16,13 @@ type GameBoardProps = {
   blockState: [BoardPiece, Dispatch<BoardPieceAction>];
 };
 
+const updateBoard = drawBoard(20, 10);
+
 const GameBoardContainer: React.FC<GameBoardProps> = ({
   game,
-  boardState,
   blockState
 }) => {
-  const [state, setState] = boardState;
+  const [state, setState] = React.useState(updateBoard([]));
   const [block, dispatch] = blockState;
 
   const boardRef = React.useRef(state);
@@ -38,7 +39,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
         if (timer) clearInterval(timer);
         return setInterval(() => {
           dispatch({ type: PieceAction.moveDown, board: boardRef.current });
-        }, 500);
+        }, 100);
       });
       dispatch({ type: PieceAction.start, board: boardRef.current });
     }
@@ -74,7 +75,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
 
   React.useEffect(() => {
     setState(state => {
-      return updateBoard(block.actions ? block.actions : [], state);
+      return updateBoard(block.actions ? block.actions : []);
     });
   }, [block, setState]);
 
