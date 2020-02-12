@@ -6,6 +6,7 @@ import useFPS from "../hooks/useFPS";
 type ControlProps = {
   level: number;
   lines: number;
+  pieces: number;
   message?: string;
 };
 
@@ -14,7 +15,12 @@ const ControlsContainer: React.FC<ControlProps> = props => {
 
   return (
     <div className="col-md-4 d-none d-md-block" style={{ textAlign: "right" }}>
-      <Status fps={fps} level={props.level} lines={props.lines} />
+      <Status
+        fps={fps}
+        level={props.level}
+        lines={props.lines}
+        pieces={props.pieces}
+      />
       <br />
       <br />
       <br />

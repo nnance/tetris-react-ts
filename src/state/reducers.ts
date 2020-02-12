@@ -7,15 +7,9 @@ import {
   Piece,
   DrawableAction
 } from "./BlockDrawer";
-import {
-  BoardPiece,
-  DrawableGrid,
-  BlockState,
-  updateBoard
-} from "./DrawableGrid";
+import { BoardPiece, DrawableGrid, BlockState } from "./DrawableGrid";
 import { GameState } from "./game";
 
-// TODO: implement collision detection with previous pieces
 // TODO: implement look ahead piece
 
 const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean => {
@@ -48,11 +42,9 @@ const didCollide = (
   actions: DrawableAction[],
   board: DrawableGrid
 ): boolean => {
-  const offActions = actions.filter(action => action.state === BlockState.off);
   const onActions = actions.filter(action => action.state === BlockState.on);
-  const newBoard = updateBoard(offActions, board);
   const collisions = onActions.find(
-    action => newBoard[action.y][action.x] === BlockState.on
+    action => board[action.y][action.x] === BlockState.on
   );
   return collisions !== undefined;
 };

@@ -5,7 +5,7 @@ import { drawers as zBlockDrawers } from "./ZBlock";
 import { drawers as tBlockDrawers } from "./TBlock";
 import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
-import { Piece } from "./BlockDrawer";
+import { Piece, DrawableAction } from "./BlockDrawer";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -22,6 +22,7 @@ export type GameState = {
   next: Piece;
   level: number;
   lines: number;
+  pieces: DrawableAction[];
 };
 
 const pickNewPiece = (): Piece => {
@@ -36,7 +37,13 @@ export enum GameActionType {
   end
 }
 
-export type GameAction = { type: GameActionType };
+// TODO: Fix action types such that nextPiece requires a block
+type NextPieceAction = {
+  type: GameActionType.nextPiece;
+  block: DrawableAction[];
+};
+
+export type GameAction = { type: GameActionType } | NextPieceAction;
 
 const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
@@ -44,7 +51,12 @@ const reducer = (state: GameState, action: GameAction): GameState => {
     : action.type === GameActionType.start
     ? { ...state, paused: false }
     : action.type === GameActionType.nextPiece
-    ? { ...state, current: state.next, next: pickNewPiece() }
+    ? {
+        ...state,
+        current: state.next,
+        next: pickNewPiece(),
+        pieces: state.pieces.concat((action as NextPieceAction).block)
+      }
     : { ...state };
 };
 
@@ -53,6 +65,7 @@ const useGameState = (): [GameState, Dispatch<GameAction>] => {
     paused: true,
     current: pickNewPiece(),
     next: pickNewPiece(),
+    pieces: [],
     level: 1,
     lines: 0
   });

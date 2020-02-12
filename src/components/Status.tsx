@@ -4,6 +4,7 @@ type StatusProps = {
   fps: number;
   level: number;
   lines: number;
+  pieces: number;
 };
 
 const Status: React.FC<StatusProps> = props => (
@@ -27,6 +28,12 @@ const Status: React.FC<StatusProps> = props => (
             <b>Lines:</b>
           </td>
           <td>{props.lines}</td>
+        </tr>
+        <tr>
+          <td>
+            <b>Pieces:</b>
+          </td>
+          <td>{props.pieces}</td>
         </tr>
       </tbody>
     </table>

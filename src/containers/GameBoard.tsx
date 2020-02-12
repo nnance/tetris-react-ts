@@ -1,5 +1,5 @@
 import React, { Dispatch } from "react";
-import { DrawableGrid, updateBoard, BoardPiece } from "../state/DrawableGrid";
+import { updateBoard, BoardPiece } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
@@ -8,20 +8,12 @@ import { GameState } from "../state/game";
 //TODO: detect when a line is completed
 
 type GameBoardProps = {
-  boardState: [
-    DrawableGrid,
-    React.Dispatch<React.SetStateAction<DrawableGrid>>
-  ];
   game: GameState;
   blockState: [BoardPiece, Dispatch<BoardPieceAction>];
 };
 
-const GameBoardContainer: React.FC<GameBoardProps> = ({
-  game,
-  boardState,
-  blockState
-}) => {
-  const [state, setState] = boardState;
+const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
+  const [state, setState] = React.useState(updateBoard([]));
   const [block, dispatch] = blockState;
 
   const boardRef = React.useRef(state);
@@ -73,10 +65,10 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
   }, [game, downArrow, dispatch]);
 
   React.useEffect(() => {
-    setState(state => {
-      return updateBoard(block.actions ? block.actions : [], state);
-    });
-  }, [block, setState]);
+    setState(() =>
+      updateBoard(block.actions ? game.pieces.concat(block.actions) : [])
+    );
+  }, [game, block, setState]);
 
   return <GameBoard board={state} />;
 };
