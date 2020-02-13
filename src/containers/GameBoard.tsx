@@ -35,7 +35,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
         if (timer) clearInterval(timer);
         return setInterval(() => {
           dispatch({ type: PieceAction.moveDown, game });
-        }, 100);
+        }, 500);
       });
       dispatch({ type: PieceAction.start, game });
     }

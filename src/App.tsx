@@ -9,7 +9,6 @@ import { DrawableGrid } from "./state/DrawableGrid";
 import { drawBlock } from "./state/BlockDrawer";
 
 // TODO: fix background color
-// TODO: major bug with leaving artifacts on the board
 
 const emptyBoard: DrawableGrid = Array(20)
   .fill(0)
@@ -23,9 +22,10 @@ const App: React.FC<{}> = () => {
   React.useEffect(() => {
     if (block.isAtBottom) {
       dispatch({
-        type: GameActionType.nextPiece,
+        type: GameActionType.checkScore,
         actions: drawBlock(block.pos.x, block.pos.y, block.drawer)
       });
+      dispatch({ type: GameActionType.nextPiece });
     }
   }, [block, dispatch]);
 

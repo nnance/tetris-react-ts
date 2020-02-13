@@ -34,27 +34,32 @@ export enum GameActionType {
   start,
   pause,
   nextPiece,
+  checkScore,
   end
 }
 
-type NextPieceAction = {
-  type: GameActionType.nextPiece;
+type CheckScoreAction = {
+  type: GameActionType.checkScore;
   actions: DrawableAction[];
 };
 
-export type GameAction = { type: GameActionType } | NextPieceAction;
+export type GameAction = { type: GameActionType } | CheckScoreAction;
 
 const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
     ? { ...state, paused: true }
     : action.type === GameActionType.start
     ? { ...state, paused: false }
+    : action.type === GameActionType.checkScore
+    ? {
+        ...state,
+        lines: state.lines.concat((action as CheckScoreAction).actions)
+      }
     : action.type === GameActionType.nextPiece
     ? {
         ...state,
         current: state.next,
-        next: pickNewPiece(),
-        lines: state.lines.concat((action as NextPieceAction).actions)
+        next: pickNewPiece()
       }
     : { ...state };
 };
