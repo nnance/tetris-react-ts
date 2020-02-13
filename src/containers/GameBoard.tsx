@@ -18,14 +18,10 @@ type GameBoardProps = {
 
 const updateBoard = drawBoard(20, 10);
 
-const GameBoardContainer: React.FC<GameBoardProps> = ({
-  game,
-  blockState
-}) => {
+const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
   const [state, setState] = React.useState(updateBoard([]));
   const [block, dispatch] = blockState;
 
-  const boardRef = React.useRef(state);
   const [timer, setTimer] = React.useState<NodeJS.Timeout>();
 
   const leftArrow = useKeyPress({ keyCode: KeyCode.leftArrow });
@@ -38,16 +34,12 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
       setTimer(timer => {
         if (timer) clearInterval(timer);
         return setInterval(() => {
-          dispatch({ type: PieceAction.moveDown, board: boardRef.current });
+          dispatch({ type: PieceAction.moveDown, game });
         }, 100);
       });
-      dispatch({ type: PieceAction.start, board: boardRef.current });
+      dispatch({ type: PieceAction.start, game });
     }
   }, [game, dispatch]);
-
-  React.useEffect(() => {
-    boardRef.current = state;
-  }, [state]);
 
   React.useEffect(() => {
     if (game.paused && timer) clearInterval(timer);
@@ -55,26 +47,27 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
 
   React.useEffect(() => {
     if (leftArrow && !game.paused)
-      dispatch({ type: PieceAction.moveLeft, board: boardRef.current });
+      dispatch({ type: PieceAction.moveLeft, game });
   }, [game, leftArrow, dispatch]);
 
   React.useEffect(() => {
     if (rightArrow && !game.paused)
-      dispatch({ type: PieceAction.moveRight, board: boardRef.current });
+      dispatch({ type: PieceAction.moveRight, game });
   }, [game, rightArrow, dispatch]);
 
   React.useEffect(() => {
-    if (upArrow && !game.paused)
-      dispatch({ type: PieceAction.rotate, board: boardRef.current });
+    if (upArrow && !game.paused) dispatch({ type: PieceAction.rotate, game });
   }, [game, upArrow, dispatch]);
 
   React.useEffect(() => {
     if (downArrow && !game.paused)
-      dispatch({ type: PieceAction.moveDown, board: boardRef.current });
+      dispatch({ type: PieceAction.moveDown, game });
   }, [game, downArrow, dispatch]);
 
   React.useEffect(() => {
-    setState(updateBoard(game.lines.concat(block.actions ? block.actions : [])));
+    setState(
+      updateBoard(game.lines.concat(block.actions ? block.actions : []))
+    );
   }, [block, setState, game]);
 
   return <GameBoard board={state} />;

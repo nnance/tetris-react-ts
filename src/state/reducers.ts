@@ -1,18 +1,17 @@
 import React, { Dispatch } from "react";
-import {
-  drawBlock,
-  BlockDrawer,
-  Piece,
-  DrawableAction
-} from "./BlockDrawer";
+import { drawBlock, BlockDrawer, Piece, DrawableAction } from "./BlockDrawer";
 import {
   BoardPiece,
   DrawableGrid,
+  drawBoard,
+  BlockState
 } from "./DrawableGrid";
 import { GameState } from "./game";
 
-// TODO: implement collision detection with previous pieces
 // TODO: implement look ahead piece
+
+const updateBoard = drawBoard(20, 10);
+const board = updateBoard([]);
 
 const atBottom = (piece: BoardPiece, board: DrawableGrid): boolean => {
   const actions = drawBlock(piece.pos.x, piece.pos.y, piece.drawer);
@@ -40,18 +39,12 @@ const rotationBlocked = (piece: BoardPiece, board: DrawableGrid): boolean => {
   return actions.find(action => action.x >= board[0].length) !== undefined;
 };
 
-const didCollide = (
-  actions: DrawableAction[],
-  board: DrawableGrid
-): boolean => {
-  // const offActions = actions.filter(action => action.state === BlockState.off);
-  // const onActions = actions.filter(action => action.state === BlockState.on);
-  // const newBoard = updateBoard(offActions, board);
-  // const collisions = onActions.find(
-  //   action => newBoard[action.y][action.x] === BlockState.on
-  // );
-  // return collisions !== undefined;
-  return false;
+const didCollide = (actions: DrawableAction[], game: GameState): boolean => {
+  const newBoard = updateBoard(game.lines);
+  const collisions = actions.find(
+    action => newBoard[action.y][action.x] === BlockState.on
+  );
+  return collisions !== undefined;
 };
 
 export enum PieceAction {
@@ -68,7 +61,7 @@ type SetPieceAction = { type: PieceAction.setPiece; piece: Piece };
 export type BoardPieceAction =
   | { type: PieceAction.start }
   | SetPieceAction
-  | { type: PieceAction; board: DrawableGrid };
+  | { type: PieceAction; game: GameState };
 
 const moveBlockDown = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
   drawBlock(pos.x, pos.y + 1, drawer);
@@ -85,22 +78,20 @@ const pieceReducer = (
 ): BoardPiece => {
   const isAtBottom =
     action.type === PieceAction.moveDown &&
-    (atBottom(state, action.board) ||
-      didCollide(moveBlockDown(state), action.board));
+    (atBottom(state, board) || didCollide(moveBlockDown(state), action.game));
 
   const newDrawer =
     action.type === PieceAction.rotate &&
-    !rotationBlocked(state, action.board) &&
+    !rotationBlocked(state, board) &&
     getNewDrawer(state);
 
   const farRight =
     action.type === PieceAction.moveRight &&
-    (atRight(state, action.board) ||
-      didCollide(moveBlockRight(state), action.board));
+    (atRight(state, board) || didCollide(moveBlockRight(state), action.game));
 
   const farLeft =
     action.type === PieceAction.moveLeft &&
-    (atLeft(state) || didCollide(moveBlockLeft(state), action.board));
+    (atLeft(state) || didCollide(moveBlockLeft(state), action.game));
 
   const {
     pos: { x, y },
