@@ -5,7 +5,7 @@ import { drawers as zBlockDrawers } from "./ZBlock";
 import { drawers as tBlockDrawers } from "./TBlock";
 import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
-import { Piece } from "./BlockDrawer";
+import { Piece, DrawableAction } from "./BlockDrawer";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -21,7 +21,8 @@ export type GameState = {
   current: Piece;
   next: Piece;
   level: number;
-  lines: number;
+  completedLines: number;
+  lines: DrawableAction[];
 };
 
 const pickNewPiece = (): Piece => {
@@ -36,7 +37,12 @@ export enum GameActionType {
   end
 }
 
-export type GameAction = { type: GameActionType };
+type NextPieceAction = {
+  type: GameActionType.nextPiece;
+  actions: DrawableAction[];
+};
+
+export type GameAction = { type: GameActionType } | NextPieceAction;
 
 const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
@@ -44,7 +50,12 @@ const reducer = (state: GameState, action: GameAction): GameState => {
     : action.type === GameActionType.start
     ? { ...state, paused: false }
     : action.type === GameActionType.nextPiece
-    ? { ...state, current: state.next, next: pickNewPiece() }
+    ? {
+        ...state,
+        current: state.next,
+        next: pickNewPiece(),
+        lines: state.lines.concat((action as NextPieceAction).actions)
+      }
     : { ...state };
 };
 
@@ -54,7 +65,8 @@ const useGameState = (): [GameState, Dispatch<GameAction>] => {
     current: pickNewPiece(),
     next: pickNewPiece(),
     level: 1,
-    lines: 0
+    completedLines: 0,
+    lines: []
   });
 };
 

@@ -74,10 +74,8 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({
   }, [game, downArrow, dispatch]);
 
   React.useEffect(() => {
-    setState(state => {
-      return updateBoard(block.actions ? block.actions : []);
-    });
-  }, [block, setState]);
+    setState(updateBoard(game.lines.concat(block.actions ? block.actions : [])));
+  }, [block, setState, game]);
 
   return <GameBoard board={state} />;
 };

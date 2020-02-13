@@ -37,7 +37,7 @@ export const updateBoard = (
 export const drawBoard = (height: number, width: number) => (
   actions: DrawableAction[]
 ) => {
-  const grid = Array(height)
+  const grid: DrawableGrid = Array(height)
     .fill(BlockState.off)
     .map(() => Array(width).fill(BlockState.off));
 

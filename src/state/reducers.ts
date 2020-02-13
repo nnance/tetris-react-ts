@@ -1,8 +1,6 @@
 import React, { Dispatch } from "react";
 import {
   drawBlock,
-  moveBlock,
-  rotateBlock,
   BlockDrawer,
   Piece,
   DrawableAction
@@ -10,8 +8,6 @@ import {
 import {
   BoardPiece,
   DrawableGrid,
-  BlockState,
-  updateBoard
 } from "./DrawableGrid";
 import { GameState } from "./game";
 
@@ -48,13 +44,14 @@ const didCollide = (
   actions: DrawableAction[],
   board: DrawableGrid
 ): boolean => {
-  const offActions = actions.filter(action => action.state === BlockState.off);
-  const onActions = actions.filter(action => action.state === BlockState.on);
-  const newBoard = updateBoard(offActions, board);
-  const collisions = onActions.find(
-    action => newBoard[action.y][action.x] === BlockState.on
-  );
-  return collisions !== undefined;
+  // const offActions = actions.filter(action => action.state === BlockState.off);
+  // const onActions = actions.filter(action => action.state === BlockState.on);
+  // const newBoard = updateBoard(offActions, board);
+  // const collisions = onActions.find(
+  //   action => newBoard[action.y][action.x] === BlockState.on
+  // );
+  // return collisions !== undefined;
+  return false;
 };
 
 export enum PieceAction {
@@ -74,13 +71,13 @@ export type BoardPieceAction =
   | { type: PieceAction; board: DrawableGrid };
 
 const moveBlockDown = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
-  moveBlock(pos.x, pos.y, pos.x, pos.y + 1, drawer);
+  drawBlock(pos.x, pos.y + 1, drawer);
 
 const moveBlockLeft = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
-  moveBlock(pos.x, pos.y, pos.x - 1, pos.y, drawer);
+  drawBlock(pos.x - 1, pos.y, drawer);
 
 const moveBlockRight = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
-  moveBlock(pos.x, pos.y, pos.x + 1, pos.y, drawer);
+  drawBlock(pos.x + 1, pos.y, drawer);
 
 const pieceReducer = (
   state: BoardPiece,
@@ -128,25 +125,25 @@ const pieceReducer = (
     ? {
         ...state,
         pos: { ...state.pos, x: x + 1 },
-        actions: moveBlock(x, y, x + 1, y, drawer)
+        actions: drawBlock(x + 1, y, drawer)
       }
     : action.type === PieceAction.moveLeft && !farLeft
     ? {
         ...state,
         pos: { ...state.pos, x: x - 1 },
-        actions: moveBlock(x, y, x - 1, y, drawer)
+        actions: drawBlock(x - 1, y, drawer)
       }
     : action.type === PieceAction.moveDown
     ? {
         ...state,
         pos: { ...state.pos, y: isAtBottom ? y : y + 1 },
-        actions: isAtBottom ? state.actions : moveBlock(x, y, x, y + 1, drawer)
+        actions: isAtBottom ? state.actions : drawBlock(x, y + 1, drawer)
       }
     : action.type === PieceAction.rotate && newDrawer
     ? {
         ...state,
         drawer: newDrawer,
-        actions: rotateBlock(x, y, drawer, newDrawer)
+        actions: drawBlock(x, y, newDrawer)
       }
     : { ...state };
 };

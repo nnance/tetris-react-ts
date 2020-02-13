@@ -6,6 +6,7 @@ import NextPiece from "./containers/NextPiece";
 import useGameState, { GameActionType } from "./state/game";
 import { useGamePieceState, PieceAction } from "./state/reducers";
 import { DrawableGrid } from "./state/DrawableGrid";
+import { drawBlock } from "./state/BlockDrawer";
 
 // TODO: fix background color
 // TODO: major bug with leaving artifacts on the board
@@ -21,7 +22,10 @@ const App: React.FC<{}> = () => {
 
   React.useEffect(() => {
     if (block.isAtBottom) {
-      dispatch({ type: GameActionType.nextPiece });
+      dispatch({
+        type: GameActionType.nextPiece,
+        actions: drawBlock(block.pos.x, block.pos.y, block.drawer)
+      });
     }
   }, [block, dispatch]);
 
@@ -48,7 +52,7 @@ const App: React.FC<{}> = () => {
         isPaused={state.paused}
       />
       <div className="row">
-        <Controls level={state.level} lines={state.lines} />
+        <Controls level={state.level} lines={state.completedLines} />
         <GameBoard
           game={state}
           boardState={[board, setBoard]}

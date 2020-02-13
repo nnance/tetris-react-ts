@@ -21,26 +21,3 @@ export const drawBlock = (
 ): DrawableAction[] => {
   return drawer(x, y, BlockState.on);
 };
-
-export const moveBlock = (
-  prevX: number,
-  prevY: number,
-  x: number,
-  y: number,
-  drawer: BlockDrawer
-): DrawableAction[] => {
-  const erase = drawer(prevX, prevY, BlockState.off);
-  const draw = drawer(x, y, BlockState.on);
-  return erase.concat(draw);
-};
-
-export const rotateBlock = (
-  x: number,
-  y: number,
-  eraser: BlockDrawer,
-  drawer: BlockDrawer
-): DrawableAction[] => {
-  const erase = eraser(x, y, BlockState.off);
-  const draw = drawer(x, y, BlockState.on);
-  return erase.concat(draw);
-};
