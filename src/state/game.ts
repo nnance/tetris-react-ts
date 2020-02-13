@@ -45,6 +45,20 @@ type CheckScoreAction = {
 
 export type GameAction = { type: GameActionType } | CheckScoreAction;
 
+const highlightedLines = (actions: DrawableAction[]): DrawableAction[] => {
+  const rowCounts = Array(20).fill(0) as number[];
+  const fullRows = actions
+    .reduce((prev, cur) => {
+      prev[cur.y] = prev[cur.y] + 1;
+      return prev;
+    }, rowCounts)
+    .reduce(
+      (prev, row, index) => (row === 19 ? prev.concat([index]) : prev),
+      [] as number[]
+    );
+  return actions;
+};
+
 const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
     ? { ...state, paused: true }
