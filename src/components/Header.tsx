@@ -33,11 +33,6 @@ const Header: React.FC<HeaderProps> = props => (
     >
       {props.isPaused ? `Resume ` : `Pause`}
     </button>
-    <br />
-    <div className="d-md-none">
-      <b>FPS:</b> <span>60</span>
-      <b>Level:</b> 0 <b>Lines:</b> 0
-    </div>
     <div className="d-none d-md-block">
       <br />
     </div>
