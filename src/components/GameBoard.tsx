@@ -1,25 +1,47 @@
 import React from "react";
-import { DrawableGrid } from "../state/DrawableGrid";
+import { DrawableGrid, BlockState } from "../state/DrawableGrid";
 
 type GameBoardProps = {
   board: DrawableGrid;
 };
 
-export const PieceBlock = {
+const Block = {
   width: "20px",
   height: "20px",
-  backgroundColor: "blue",
   border: "1px solid black",
   fontSize: "0.75rem"
 };
 
-export const EmptyBlock = {
-  width: "20px",
-  height: "20px",
-  backgroundColor: "white",
-  border: "1px solid black",
-  fontSize: "0.75rem"
+export const PieceBlock = {
+  ...Block,
+  backgroundColor: "blue"
 };
+
+export const EmptyBlock = {
+  ...Block,
+  backgroundColor: "white"
+};
+
+const getRandomColor = (): string => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+type CellStyle = { style: React.CSSProperties; testID: string };
+
+const getStyle = (block: BlockState): CellStyle =>
+  block === BlockState.on
+    ? { style: PieceBlock, testID: "on" }
+    : block === BlockState.highlight
+    ? {
+        style: { ...Block, backgroundColor: getRandomColor() },
+        testID: "highlight"
+      }
+    : { style: EmptyBlock, testID: "empty" };
 
 const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
   return (
@@ -29,7 +51,11 @@ const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
           {board.map((row, rowIdx) => (
             <tr key={`${row}-${rowIdx}`}>
               {row.map((block, idx) => (
-                <td key={idx} style={block ? PieceBlock : EmptyBlock}>
+                <td
+                  key={idx}
+                  style={getStyle(block).style}
+                  data-testid={getStyle(block).testID}
+                >
                   {" "}
                 </td>
               ))}

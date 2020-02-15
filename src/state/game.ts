@@ -6,6 +6,7 @@ import { drawers as tBlockDrawers } from "./TBlock";
 import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece, DrawableAction } from "./BlockDrawer";
+import { BlockState } from "./DrawableGrid";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -45,18 +46,28 @@ type CheckScoreAction = {
 
 export type GameAction = { type: GameActionType } | CheckScoreAction;
 
-const highlightedLines = (actions: DrawableAction[]): DrawableAction[] => {
-  const rowCounts = Array(20).fill(0) as number[];
-  const fullRows = actions
+//TODO: assumes a board hight
+const findFullRows = (actions: DrawableAction[]): number[] =>
+  actions
     .reduce((prev, cur) => {
-      prev[cur.y] = prev[cur.y] + 1;
+      prev[cur.y] += 1;
       return prev;
-    }, rowCounts)
+    }, Array(20).fill(0))
     .reduce(
-      (prev, row, index) => (row === 19 ? prev.concat([index]) : prev),
+      (prev, row, index) => (row === 10 ? prev.concat([index]) : prev),
       [] as number[]
     );
-  return actions;
+
+export const highlightLines = (actions: DrawableAction[]): DrawableAction[] => {
+  const rowCounts = findFullRows(actions);
+  return actions.reduce((prev, action) => {
+    const newAction = rowCounts.reduce(
+      (prev, row) =>
+        prev.y === row ? { ...prev, state: BlockState.highlight } : prev,
+      { ...action }
+    );
+    return prev.concat(newAction);
+  }, [] as DrawableAction[]);
 };
 
 const reducer = (state: GameState, action: GameAction): GameState => {
@@ -67,7 +78,9 @@ const reducer = (state: GameState, action: GameAction): GameState => {
     : action.type === GameActionType.checkScore
     ? {
         ...state,
-        lines: state.lines.concat((action as CheckScoreAction).actions)
+        lines: highlightLines(
+          state.lines.concat((action as CheckScoreAction).actions)
+        )
       }
     : action.type === GameActionType.nextPiece
     ? {

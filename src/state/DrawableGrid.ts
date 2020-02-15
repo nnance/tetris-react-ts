@@ -1,10 +1,10 @@
-import { cloneDeep } from "lodash";
 import { DrawableAction, Piece, BlockDrawer } from "./BlockDrawer";
 
 export enum BlockState {
-  off = 0,
-  on = 1,
-  shaded = 2
+  off,
+  on,
+  shaded,
+  highlight
 }
 
 export type DrawableGrid = BlockState[][];
@@ -22,21 +22,9 @@ export type BoardPiece = {
   actions?: DrawableAction[];
 };
 
-export const updateBoard = (
-  actions: DrawableAction[],
-  grid: DrawableGrid
-): DrawableGrid => {
-  return actions.reduce((prev, { x, y, state }) => {
-    if (x > -1 && y > -1 && y < grid.length && x < grid[y].length) {
-      prev[y][x] = state;
-    }
-    return prev;
-  }, cloneDeep(grid));
-};
-
 export const drawBoard = (height: number, width: number) => (
   actions: DrawableAction[]
-) => {
+): DrawableGrid => {
   const grid: DrawableGrid = Array(height)
     .fill(BlockState.off)
     .map(() => Array(width).fill(BlockState.off));
