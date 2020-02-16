@@ -33,17 +33,18 @@ const getRandomColor = (): string => {
 
 type CellStyle = { style: React.CSSProperties; testID: string };
 
-const getStyle = (block: BlockState): CellStyle =>
+const getStyle = (block: BlockState, backgroundColor: string): CellStyle =>
   block === BlockState.on
     ? { style: PieceBlock, testID: "on" }
     : block === BlockState.highlight
     ? {
-        style: { ...Block, backgroundColor: getRandomColor() },
+        style: { ...Block, backgroundColor },
         testID: "highlight"
       }
     : { style: EmptyBlock, testID: "empty" };
 
 const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
+  const highlight = getRandomColor();
   return (
     <div className="col-md-4 col-8">
       <table style={{ margin: "0px auto" }}>
@@ -53,8 +54,8 @@ const GameBoard: React.FC<GameBoardProps> = ({ board }) => {
               {row.map((block, idx) => (
                 <td
                   key={idx}
-                  style={getStyle(block).style}
-                  data-testid={getStyle(block).testID}
+                  style={getStyle(block, highlight).style}
+                  data-testid={getStyle(block, highlight).testID}
                 >
                   {" "}
                 </td>
