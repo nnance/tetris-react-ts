@@ -7,6 +7,7 @@ import {
   BlockState
 } from "./DrawableGrid";
 import { GameState } from "./game";
+import { BoardPieceAction, PieceActionType, SetPieceAction } from "./actions";
 
 // TODO: implement look ahead piece
 
@@ -47,22 +48,6 @@ const didCollide = (actions: DrawableAction[], game: GameState): boolean => {
   return collisions !== undefined;
 };
 
-export enum PieceAction {
-  start,
-  moveRight,
-  moveLeft,
-  moveDown,
-  setPiece,
-  rotate
-}
-
-type SetPieceAction = { type: PieceAction.setPiece; piece: Piece };
-
-export type BoardPieceAction =
-  | { type: PieceAction.start }
-  | SetPieceAction
-  | { type: PieceAction; game: GameState };
-
 const moveBlockDown = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
   drawBlock(pos.x, pos.y + 1, drawer);
 
@@ -72,25 +57,25 @@ const moveBlockLeft = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
 const moveBlockRight = ({ pos, drawer }: BoardPiece): DrawableAction[] =>
   drawBlock(pos.x + 1, pos.y, drawer);
 
-const pieceReducer = (
+export const pieceReducer = (
   state: BoardPiece,
   action: BoardPieceAction
 ): BoardPiece => {
   const isAtBottom =
-    action.type === PieceAction.moveDown &&
+    action.type === PieceActionType.moveDown &&
     (atBottom(state, board) || didCollide(moveBlockDown(state), action.game));
 
   const newDrawer =
-    action.type === PieceAction.rotate &&
+    action.type === PieceActionType.rotate &&
     !rotationBlocked(state, board) &&
     getNewDrawer(state);
 
   const farRight =
-    action.type === PieceAction.moveRight &&
+    action.type === PieceActionType.moveRight &&
     (atRight(state, board) || didCollide(moveBlockRight(state), action.game));
 
   const farLeft =
-    action.type === PieceAction.moveLeft &&
+    action.type === PieceActionType.moveLeft &&
     (atLeft(state) || didCollide(moveBlockLeft(state), action.game));
 
   const {
@@ -100,37 +85,37 @@ const pieceReducer = (
 
   return isAtBottom
     ? { ...state, isAtBottom: true }
-    : action.type === PieceAction.setPiece
+    : action.type === PieceActionType.setPiece
     ? {
         pos: { x: 1, y: 0 },
         piece: (action as SetPieceAction).piece,
         isAtBottom: false,
         drawer: (action as SetPieceAction).piece[0]
       }
-    : action.type === PieceAction.start
+    : action.type === PieceActionType.start
     ? {
         ...state,
         actions: drawBlock(state.pos.x, state.pos.y, state.drawer)
       }
-    : action.type === PieceAction.moveRight && !farRight
+    : action.type === PieceActionType.moveRight && !farRight
     ? {
         ...state,
         pos: { ...state.pos, x: x + 1 },
         actions: drawBlock(x + 1, y, drawer)
       }
-    : action.type === PieceAction.moveLeft && !farLeft
+    : action.type === PieceActionType.moveLeft && !farLeft
     ? {
         ...state,
         pos: { ...state.pos, x: x - 1 },
         actions: drawBlock(x - 1, y, drawer)
       }
-    : action.type === PieceAction.moveDown
+    : action.type === PieceActionType.moveDown
     ? {
         ...state,
         pos: { ...state.pos, y: isAtBottom ? y : y + 1 },
         actions: isAtBottom ? state.actions : drawBlock(x, y + 1, drawer)
       }
-    : action.type === PieceAction.rotate && newDrawer
+    : action.type === PieceActionType.rotate && newDrawer
     ? {
         ...state,
         drawer: newDrawer,
@@ -152,7 +137,7 @@ export const useGamePieceState = (
 
   React.useEffect(() => {
     if (piece.isAtBottom) {
-      dispatch({ type: PieceAction.setPiece, piece: gameState.next });
+      dispatch({ type: PieceActionType.setPiece, piece: gameState.next });
     }
   }, [gameState, piece]);
   return [piece, dispatch];

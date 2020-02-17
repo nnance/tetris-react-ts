@@ -1,6 +1,11 @@
 import React from "react";
-import { GameAction, GameActionType, GameState } from "./game";
-import { PieceAction, BoardPieceAction } from "./reducers";
+import { GameState } from "./game";
+import {
+  GameAction,
+  GameActionType,
+  PieceActionType,
+  BoardPieceAction
+} from "./actions";
 
 type MiddleWare = (
   state: GameState,
@@ -15,7 +20,7 @@ const applyMiddleware: MiddleWare = (state, dispatch, pieceDispatch) => {
   const nextPiece = dispatchNextPiece(dispatch);
   return (action: GameAction): void => {
     if (action.type === GameActionType.new) {
-      pieceDispatch({ type: PieceAction.setPiece, piece: state.current });
+      pieceDispatch({ type: PieceActionType.setPiece, piece: state.current });
       dispatch({ type: GameActionType.start });
     } else dispatch(action);
   };

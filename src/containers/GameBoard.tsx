@@ -2,7 +2,7 @@ import React, { Dispatch } from "react";
 import { BoardPiece, drawBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { PieceAction, BoardPieceAction } from "../state/reducers";
+import { PieceActionType, BoardPieceAction } from "../state/actions";
 import { GameState } from "../state/game";
 
 //TODO: detect when a line is completed
@@ -30,10 +30,10 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
       setTimer(timer => {
         if (timer) clearInterval(timer);
         return setInterval(() => {
-          dispatch({ type: PieceAction.moveDown, game });
+          dispatch({ type: PieceActionType.moveDown, game });
         }, 500);
       });
-      dispatch({ type: PieceAction.start, game });
+      dispatch({ type: PieceActionType.start, game });
     }
   }, [game, dispatch]);
 
@@ -43,21 +43,21 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
 
   React.useEffect(() => {
     if (leftArrow && !game.paused)
-      dispatch({ type: PieceAction.moveLeft, game });
+      dispatch({ type: PieceActionType.moveLeft, game });
   }, [game, leftArrow, dispatch]);
 
   React.useEffect(() => {
     if (rightArrow && !game.paused)
-      dispatch({ type: PieceAction.moveRight, game });
+      dispatch({ type: PieceActionType.moveRight, game });
   }, [game, rightArrow, dispatch]);
 
   React.useEffect(() => {
-    if (upArrow && !game.paused) dispatch({ type: PieceAction.rotate, game });
+    if (upArrow && !game.paused) dispatch({ type: PieceActionType.rotate, game });
   }, [game, upArrow, dispatch]);
 
   React.useEffect(() => {
     if (downArrow && !game.paused)
-      dispatch({ type: PieceAction.moveDown, game });
+      dispatch({ type: PieceActionType.moveDown, game });
   }, [game, downArrow, dispatch]);
 
   React.useEffect(() => {

@@ -6,7 +6,8 @@ import { drawers as tBlockDrawers } from "./TBlock";
 import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece, DrawableAction } from "./BlockDrawer";
-import { BlockState } from "./DrawableGrid";
+import { BlockState, BoardPiece } from "./DrawableGrid";
+import { GameAction, GameActionType, CheckScoreAction } from "./actions";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -24,28 +25,13 @@ export type GameState = {
   level: number;
   completedLines: number;
   lines: DrawableAction[];
+  boardPiece?: BoardPiece;
 };
 
 const pickNewPiece = (): Piece => {
   const pieceIndex = Math.floor(Math.random() * pieces.length);
   return pieces[pieceIndex];
 };
-
-export enum GameActionType {
-  new,
-  start,
-  pause,
-  nextPiece,
-  checkScore,
-  end
-}
-
-type CheckScoreAction = {
-  type: GameActionType.checkScore;
-  actions: DrawableAction[];
-};
-
-export type GameAction = { type: GameActionType } | CheckScoreAction;
 
 //TODO: assumes a board hight
 const findFullRows = (actions: DrawableAction[]): number[] =>
