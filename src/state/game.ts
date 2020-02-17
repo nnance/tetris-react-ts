@@ -7,7 +7,6 @@ import { drawers as sBlockDrawers } from "./SBlock";
 import { drawers as lBlockDrawers } from "./LBlock";
 import { Piece, DrawableAction } from "./BlockDrawer";
 import { BlockState } from "./DrawableGrid";
-import applyMiddleware from "./middleware";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -33,6 +32,7 @@ const pickNewPiece = (): Piece => {
 };
 
 export enum GameActionType {
+  new,
   start,
   pause,
   nextPiece,
@@ -93,7 +93,7 @@ const reducer = (state: GameState, action: GameAction): GameState => {
 };
 
 const useGameState = (): [GameState, Dispatch<GameAction>] => {
-  const [state, dispatch] = React.useReducer(reducer, {
+  return React.useReducer(reducer, {
     paused: true,
     current: pickNewPiece(),
     next: pickNewPiece(),
@@ -101,8 +101,6 @@ const useGameState = (): [GameState, Dispatch<GameAction>] => {
     completedLines: 0,
     lines: []
   });
-  const gameMiddleware = applyMiddleware(dispatch);
-  return [state, gameMiddleware];
 };
 
 export default useGameState;

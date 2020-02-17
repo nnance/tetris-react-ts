@@ -4,14 +4,16 @@ import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
 import useGameState, { GameActionType } from "./state/game";
-import { useGamePieceState, PieceAction } from "./state/reducers";
+import { useGamePieceState } from "./state/reducers";
 import { drawBlock } from "./state/BlockDrawer";
+import applyMiddleware from "./state/middleware";
 
 // TODO: fix background color
 
 const App: React.FC<{}> = () => {
-  const [state, dispatch] = useGameState();
+  const [state, gameDispatch] = useGameState();
   const [block, pieceDispatch] = useGamePieceState(state);
+  const dispatch = applyMiddleware(state, gameDispatch, pieceDispatch);
 
   React.useEffect(() => {
     if (block.isAtBottom) {
@@ -22,11 +24,6 @@ const App: React.FC<{}> = () => {
       dispatch({ type: GameActionType.nextPiece });
     }
   }, [block, dispatch]);
-
-  const startGame = (): void => {
-    pieceDispatch({ type: PieceAction.setPiece, piece: state.current });
-    dispatch({ type: GameActionType.start });
-  };
 
   return (
     <div
@@ -39,7 +36,7 @@ const App: React.FC<{}> = () => {
       }}
     >
       <Header
-        startHandler={startGame}
+        startHandler={(): void => dispatch({ type: GameActionType.new })}
         pauseHandler={(): void => dispatch({ type: GameActionType.pause })}
         resumeHandler={(): void => dispatch({ type: GameActionType.start })}
         isPaused={state.paused}
