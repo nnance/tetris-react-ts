@@ -1,5 +1,5 @@
 import React, { Dispatch } from "react";
-import { DrawableGrid, BoardPiece, drawBoard } from "../state/DrawableGrid";
+import { BoardPiece, drawBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
 import { PieceAction, BoardPieceAction } from "../state/reducers";
@@ -8,10 +8,6 @@ import { GameState } from "../state/game";
 //TODO: detect when a line is completed
 
 type GameBoardProps = {
-  boardState: [
-    DrawableGrid,
-    React.Dispatch<React.SetStateAction<DrawableGrid>>
-  ];
   game: GameState;
   blockState: [BoardPiece, Dispatch<BoardPieceAction>];
 };
