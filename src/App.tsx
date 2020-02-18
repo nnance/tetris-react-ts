@@ -4,14 +4,15 @@ import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
 import { initialGameState } from "./state/game";
-import { GameActionType, PieceActionType } from "./state/actions";
+import { GameActionType } from "./state/actions";
 import { pieceToBoardPiece } from "./state/reducers";
 import { drawBlock } from "./state/BlockDrawer";
 import applyMiddleware from "./state/middleware";
 import { reducer } from "./state/app";
 
-// TODO: fix background color
+// TODO: make middleware work for all actions
 // TODO: use app context to avoid passing reducer
+// TODO: fix background color
 
 const App: React.FC<{}> = () => {
   const [state, dispatch] = React.useReducer(reducer, {
@@ -19,7 +20,7 @@ const App: React.FC<{}> = () => {
     piece: pieceToBoardPiece(initialGameState.current)
   });
 
-  // const dispatch = applyMiddleware(state, gameDispatch);
+  const middleware = applyMiddleware(state, dispatch);
 
   React.useEffect(() => {
     const { piece } = state;
@@ -43,10 +44,7 @@ const App: React.FC<{}> = () => {
       }}
     >
       <Header
-        startHandler={(): void => {
-          dispatch({ type: PieceActionType.setPiece, piece: state.game.current });
-          dispatch({ type: GameActionType.start });
-        }}
+        startHandler={(): void => middleware({ type: GameActionType.new })}
         pauseHandler={(): void => dispatch({ type: GameActionType.pause })}
         resumeHandler={(): void => dispatch({ type: GameActionType.start })}
         isPaused={state.game.paused}
