@@ -124,15 +124,17 @@ export const pieceReducer = (
     : { ...state };
 };
 
+export const pieceToBoardPiece = (piece: Piece): BoardPiece => ({
+  pos: { x: 1, y: 0 },
+  piece,
+  isAtBottom: false,
+  drawer: piece[0]
+});
+
 export const useGamePieceState = (
   gameState: GameState
 ): [BoardPiece, Dispatch<BoardPieceAction>] => {
-  const boardPiece: BoardPiece = {
-    pos: { x: 1, y: 0 },
-    piece: gameState.current,
-    isAtBottom: false,
-    drawer: gameState.current[0]
-  };
+  const boardPiece = pieceToBoardPiece(gameState.current);
   const [piece, dispatch] = React.useReducer(pieceReducer, boardPiece);
 
   React.useEffect(() => {

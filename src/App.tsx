@@ -3,28 +3,34 @@ import Header from "./components/Header";
 import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
-import useGameState from "./state/game";
-import { GameActionType } from "./state/actions";
-import { useGamePieceState } from "./state/reducers";
+import { initialGameState } from "./state/game";
+import { GameActionType, PieceActionType } from "./state/actions";
+import { pieceToBoardPiece } from "./state/reducers";
 import { drawBlock } from "./state/BlockDrawer";
 import applyMiddleware from "./state/middleware";
+import { reducer } from "./state/app";
 
 // TODO: fix background color
+// TODO: use app context to avoid passing reducer
 
 const App: React.FC<{}> = () => {
-  const [state, gameDispatch] = useGameState();
-  const [block, pieceDispatch] = useGamePieceState(state);
-  const dispatch = applyMiddleware(state, gameDispatch, pieceDispatch);
+  const [state, dispatch] = React.useReducer(reducer, {
+    game: initialGameState,
+    piece: pieceToBoardPiece(initialGameState.current)
+  });
+
+  // const dispatch = applyMiddleware(state, gameDispatch);
 
   React.useEffect(() => {
-    if (block.isAtBottom) {
+    const { piece } = state;
+    if (piece.isAtBottom) {
       dispatch({
         type: GameActionType.checkScore,
-        actions: drawBlock(block.pos.x, block.pos.y, block.drawer)
+        actions: drawBlock(piece.pos.x, piece.pos.y, piece.drawer)
       });
       dispatch({ type: GameActionType.nextPiece });
     }
-  }, [block, dispatch]);
+  }, [state, dispatch]);
 
   return (
     <div
@@ -37,15 +43,18 @@ const App: React.FC<{}> = () => {
       }}
     >
       <Header
-        startHandler={(): void => dispatch({ type: GameActionType.new })}
+        startHandler={(): void => {
+          dispatch({ type: PieceActionType.setPiece, piece: state.game.current });
+          dispatch({ type: GameActionType.start });
+        }}
         pauseHandler={(): void => dispatch({ type: GameActionType.pause })}
         resumeHandler={(): void => dispatch({ type: GameActionType.start })}
-        isPaused={state.paused}
+        isPaused={state.game.paused}
       />
       <div className="row">
-        <Controls level={state.level} lines={state.completedLines} />
-        <GameBoard game={state} blockState={[block, pieceDispatch]} />
-        <NextPiece piece={state.next} />
+        <Controls level={state.game.level} lines={state.game.completedLines} />
+        <GameBoard game={state.game} blockState={[state.piece, dispatch]} />
+        <NextPiece piece={state.game.next} />
       </div>
     </div>
   );

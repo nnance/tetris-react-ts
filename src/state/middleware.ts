@@ -1,26 +1,25 @@
 import React from "react";
-import { GameState } from "./game";
 import {
   GameAction,
   GameActionType,
   PieceActionType,
   BoardPieceAction
 } from "./actions";
+import { AppState } from "./app";
 
 type MiddleWare = (
-  state: GameState,
-  dispatch: React.Dispatch<GameAction>,
-  pieceDispatch: React.Dispatch<BoardPieceAction>
-) => (action: GameAction) => void;
+  state: AppState,
+  dispatch: React.Dispatch<GameAction | BoardPieceAction>
+) => (action: GameAction | BoardPieceAction) => void;
 
 const dispatchNextPiece = (dispatch: React.Dispatch<GameAction>) => (): void =>
   dispatch({ type: GameActionType.nextPiece });
 
-const applyMiddleware: MiddleWare = (state, dispatch, pieceDispatch) => {
+const applyMiddleware: MiddleWare = (state, dispatch) => {
   const nextPiece = dispatchNextPiece(dispatch);
-  return (action: GameAction): void => {
+  return (action): void => {
     if (action.type === GameActionType.new) {
-      pieceDispatch({ type: PieceActionType.setPiece, piece: state.current });
+      dispatch({ type: PieceActionType.setPiece, piece: state.game.current });
       dispatch({ type: GameActionType.start });
     } else dispatch(action);
   };

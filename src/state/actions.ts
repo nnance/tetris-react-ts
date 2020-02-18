@@ -2,7 +2,7 @@ import { GameState } from "./game";
 import { DrawableAction, Piece } from "./BlockDrawer";
 
 export enum PieceActionType {
-  start,
+  start = 100,
   moveRight,
   moveLeft,
   moveDown,
@@ -18,7 +18,7 @@ export type BoardPieceAction =
   | { type: PieceActionType; game: GameState };
 
 export enum GameActionType {
-  new,
+  new = 200,
   start,
   pause,
   nextPiece,
