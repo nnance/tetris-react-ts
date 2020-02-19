@@ -4,7 +4,7 @@ import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
 import { initialGameState } from "./state/game";
-import { GameActionType } from "./state/actions";
+import { GameActionType, PieceActionType } from "./state/actions";
 import { pieceToBoardPiece } from "./state/reducers";
 import { drawBlock } from "./state/BlockDrawer";
 import applyMiddleware from "./state/middleware";
@@ -25,6 +25,7 @@ const App: React.FC<{}> = () => {
   React.useEffect(() => {
     const { piece } = state;
     if (piece.isAtBottom) {
+      dispatch({ type: PieceActionType.setPiece, piece: state.game.next });
       dispatch({
         type: GameActionType.checkScore,
         actions: drawBlock(piece.pos.x, piece.pos.y, piece.drawer)

@@ -1,4 +1,3 @@
-import React, { Dispatch } from "react";
 import { drawers as iBlockDrawers } from "./IBlock";
 import { drawers as jBlockDrawers } from "./JBlock";
 import { drawers as zBlockDrawers } from "./ZBlock";
@@ -86,9 +85,3 @@ export const initialGameState = {
   completedLines: 0,
   lines: []
 };
-
-const useGameState = (state = initialGameState): [GameState, Dispatch<GameAction>] => {
-  return React.useReducer(reducer, state);
-};
-
-export default useGameState;

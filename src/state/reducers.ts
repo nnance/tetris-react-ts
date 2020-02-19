@@ -1,4 +1,3 @@
-import React, { Dispatch } from "react";
 import { drawBlock, BlockDrawer, Piece, DrawableAction } from "./BlockDrawer";
 import {
   BoardPiece,
@@ -130,17 +129,3 @@ export const pieceToBoardPiece = (piece: Piece): BoardPiece => ({
   isAtBottom: false,
   drawer: piece[0]
 });
-
-export const useGamePieceState = (
-  gameState: GameState
-): [BoardPiece, Dispatch<BoardPieceAction>] => {
-  const boardPiece = pieceToBoardPiece(gameState.current);
-  const [piece, dispatch] = React.useReducer(pieceReducer, boardPiece);
-
-  React.useEffect(() => {
-    if (piece.isAtBottom) {
-      dispatch({ type: PieceActionType.setPiece, piece: gameState.next });
-    }
-  }, [gameState, piece]);
-  return [piece, dispatch];
-};
