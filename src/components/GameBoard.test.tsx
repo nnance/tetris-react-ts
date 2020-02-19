@@ -2,8 +2,8 @@ import React from "react";
 import { render } from "@testing-library/react";
 import GameBoard from "./GameBoard";
 import { drawBlock } from "../state/BlockDrawer";
-import { drawers as iBlockDrawers } from "../state/IBlock";
-import { drawers as tBlockDrawers } from "../state/TBlock";
+import { drawers as iBlockDrawers } from "../state/blocks/IBlock";
+import { drawers as tBlockDrawers } from "../state/blocks/TBlock";
 import { DrawableGrid, drawBoard } from "../state/DrawableGrid";
 import { highlightLines } from "../state/game";
 

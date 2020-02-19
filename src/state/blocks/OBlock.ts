@@ -1,5 +1,5 @@
-import { BlockState } from "./DrawableGrid";
-import { DrawableAction, Piece } from "./BlockDrawer";
+import { BlockState } from "../DrawableGrid";
+import { DrawableAction, Piece } from "../BlockDrawer";
 
 const verticalBlock = (
   x: number,

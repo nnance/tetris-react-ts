@@ -1,22 +1,25 @@
-import React, { Dispatch } from "react";
-import { BoardPiece, drawBoard } from "../state/DrawableGrid";
+import React from "react";
+import { drawBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { PieceActionType, BoardPieceAction } from "../state/actions";
-import { GameState } from "../state/game";
+import { PieceActionType } from "../state/actions";
+import { Action } from "../state/store";
+import { AppState } from "../state/app";
+import { useGameState } from "../state/game";
 
 //TODO: detect when a line is completed
 
-type GameBoardProps = {
-  game: GameState;
-  blockState: [BoardPiece, Dispatch<BoardPieceAction>];
-};
-
 const updateBoard = drawBoard(20, 10);
 
-const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
+type GameBoardProps = {
+  store: [AppState, React.Dispatch<Action>]
+}
+
+const GameBoardContainer: React.FC<GameBoardProps> = props => {
+  const [{ game, piece }, dispatch] = props.store;
+
   const [state, setState] = React.useState(updateBoard([]));
-  const [block, dispatch] = blockState;
+  useGameState(props.store);
 
   const [timer, setTimer] = React.useState<NodeJS.Timeout>();
 
@@ -62,9 +65,9 @@ const GameBoardContainer: React.FC<GameBoardProps> = ({ game, blockState }) => {
 
   React.useEffect(() => {
     setState(
-      updateBoard(game.lines.concat(block.actions ? block.actions : []))
+      updateBoard(game.lines.concat(piece.actions ? piece.actions : []))
     );
-  }, [block, setState, game]);
+  }, [piece, setState, game]);
 
   return <GameBoard board={state} />;
 };

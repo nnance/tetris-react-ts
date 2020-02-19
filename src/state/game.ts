@@ -1,12 +1,15 @@
-import { drawers as iBlockDrawers } from "./IBlock";
-import { drawers as jBlockDrawers } from "./JBlock";
-import { drawers as zBlockDrawers } from "./ZBlock";
-import { drawers as tBlockDrawers } from "./TBlock";
-import { drawers as sBlockDrawers } from "./SBlock";
-import { drawers as lBlockDrawers } from "./LBlock";
-import { Piece, DrawableAction } from "./BlockDrawer";
+import React from "react";
+import { drawers as iBlockDrawers } from "./blocks/IBlock";
+import { drawers as jBlockDrawers } from "./blocks/JBlock";
+import { drawers as zBlockDrawers } from "./blocks/ZBlock";
+import { drawers as tBlockDrawers } from "./blocks/TBlock";
+import { drawers as sBlockDrawers } from "./blocks/SBlock";
+import { drawers as lBlockDrawers } from "./blocks/LBlock";
+import { Piece, DrawableAction, drawBlock } from "./BlockDrawer";
 import { BlockState, BoardPiece } from "./DrawableGrid";
-import { GameAction, GameActionType, CheckScoreAction } from "./actions";
+import { GameAction, GameActionType, CheckScoreAction, PieceActionType } from "./actions";
+import { AppState } from "./app";
+import { Action } from "./store";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -77,11 +80,25 @@ export const reducer = (state: GameState, action: GameAction): GameState => {
     : { ...state };
 };
 
-export const initialGameState = {
+export const initialGameState: GameState = {
   paused: true,
   current: pickNewPiece(),
   next: pickNewPiece(),
   level: 1,
   completedLines: 0,
   lines: []
+};
+
+export const useGameState = (store: [AppState, React.Dispatch<Action>]) => {
+  React.useEffect(() => {
+    const [{ piece, game }, dispatch] = store;
+    if (piece.isAtBottom) {
+      dispatch({ type: PieceActionType.setPiece, piece: game.next });
+      dispatch({
+        type: GameActionType.checkScore,
+        actions: drawBlock(piece.pos.x, piece.pos.y, piece.drawer)
+      });
+      dispatch({ type: GameActionType.nextPiece });
+    }
+  }, [store]);
 };
