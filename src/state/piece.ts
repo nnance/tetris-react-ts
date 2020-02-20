@@ -8,6 +8,7 @@ import {
 import { GameState } from "./game";
 import { BoardPieceAction, PieceActionType, SetPieceAction } from "./actions";
 
+// TODO: fix circular references.  piece shouldn't reference game in anyway
 // TODO: implement look ahead piece
 
 const updateBoard = drawBoard(20, 10);

@@ -3,7 +3,7 @@ import Header from "./components/Header";
 import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
-import { GameActionType, PieceActionType } from "./state/actions";
+import { GameActionType, gameActions } from "./state/actions";
 import { StoreProvider, StoreConsumer } from "./state/store";
 
 // TODO: make middleware work for all actions
@@ -24,18 +24,14 @@ const App: React.FC<{}> = () => {
             }}
           >
             <Header
-              startHandler={(): void => {
-                dispatch({
-                  type: PieceActionType.setPiece,
-                  piece: state.game.current
-                });
-                dispatch({ type: GameActionType.start });
-              }}
+              startHandler={(): void =>
+                gameActions(state, dispatch).startGame()
+              }
               pauseHandler={(): void =>
                 dispatch({ type: GameActionType.pause })
               }
               resumeHandler={(): void =>
-                dispatch({ type: GameActionType.start })
+                dispatch({ type: GameActionType.resume })
               }
               isPaused={state.game.paused}
             />

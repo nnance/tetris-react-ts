@@ -2,7 +2,7 @@ import { GameState } from "./game";
 import { BoardPiece } from "./DrawableGrid";
 import { GameAction, BoardPieceAction, GameActionType, PieceActionType } from "./actions";
 import { reducer as gameReducer } from "./game";
-import { pieceReducer } from "./reducers";
+import { pieceReducer } from "./piece";
 
 export type AppState = {
     game: GameState,

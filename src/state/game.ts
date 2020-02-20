@@ -35,7 +35,7 @@ const pickNewPiece = (): Piece => {
   return pieces[pieceIndex];
 };
 
-//TODO: assumes a board hight
+//TODO: assumes a board height
 const findFullRows = (actions: DrawableAction[]): number[] =>
   actions
     .reduce((prev, cur) => {
@@ -62,7 +62,7 @@ export const highlightLines = (actions: DrawableAction[]): DrawableAction[] => {
 export const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
     ? { ...state, paused: true }
-    : action.type === GameActionType.start
+    : action.type === GameActionType.resume
     ? { ...state, paused: false }
     : action.type === GameActionType.checkScore
     ? {
@@ -70,6 +70,11 @@ export const reducer = (state: GameState, action: GameAction): GameState => {
         lines: highlightLines(
           state.lines.concat((action as CheckScoreAction).actions)
         )
+      }
+    : action.type === GameActionType.start
+    ? {
+        ...initialGameState(),
+        paused: false
       }
     : action.type === GameActionType.nextPiece
     ? {
@@ -80,14 +85,14 @@ export const reducer = (state: GameState, action: GameAction): GameState => {
     : { ...state };
 };
 
-export const initialGameState: GameState = {
+export const initialGameState = (): GameState => ({
   paused: true,
   current: pickNewPiece(),
   next: pickNewPiece(),
   level: 1,
   completedLines: 0,
   lines: []
-};
+});
 
 export const useGameState = (store: [AppState, React.Dispatch<Action>]) => {
   React.useEffect(() => {

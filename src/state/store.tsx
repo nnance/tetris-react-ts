@@ -2,15 +2,16 @@ import React, { useReducer } from "react";
 import { GameAction, BoardPieceAction } from "./actions";
 import { AppState, reducer } from "./app";
 import { initialGameState } from "./game";
-import { pieceToBoardPiece } from "./reducers";
+import { pieceToBoardPiece } from "./piece";
 
 export type Action = GameAction | BoardPieceAction;
 
 export type AppContext = [AppState, React.Dispatch<Action>];
 
+const game = initialGameState();
 const initialState: AppState = {
-  game: initialGameState,
-  piece: pieceToBoardPiece(initialGameState.current)
+  game,
+  piece: pieceToBoardPiece(game.current)
 };
 
 export const Store = React.createContext<AppContext>([
