@@ -7,7 +7,7 @@ import { drawers as sBlockDrawers } from "./blocks/SBlock";
 import { drawers as lBlockDrawers } from "./blocks/LBlock";
 import { Piece, DrawableAction, drawBlock } from "./BlockDrawer";
 import { BlockState, BoardPiece } from "./DrawableGrid";
-import { GameAction, GameActionType, CheckScoreAction, PieceActionType } from "./actions";
+import { GameAction, GameActionType, CheckScoreAction, PieceActionType, actions } from "./actions";
 import { AppState } from "./app";
 import { Action } from "./store";
 
@@ -95,15 +95,15 @@ export const initialGameState = (): GameState => ({
 });
 
 export const useGameState = (store: [AppState, React.Dispatch<Action>]) => {
+  const [, dispatch] = store;
+  const { checkScore, nextPiece } = actions(dispatch);
+
   React.useEffect(() => {
     const [{ piece, game }, dispatch] = store;
     if (piece.isAtBottom) {
       dispatch({ type: PieceActionType.setPiece, piece: game.next });
-      dispatch({
-        type: GameActionType.checkScore,
-        actions: drawBlock(piece.pos.x, piece.pos.y, piece.drawer)
-      });
-      dispatch({ type: GameActionType.nextPiece });
+      checkScore(drawBlock(piece.pos.x, piece.pos.y, piece.drawer));
+      nextPiece();
     }
-  }, [store]);
+  }, [store, checkScore, nextPiece]);
 };
