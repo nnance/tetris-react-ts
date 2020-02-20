@@ -1,5 +1,6 @@
 import { GameState } from "./game";
-import { DrawableAction, Piece } from "./BlockDrawer";
+import { DrawableAction, Piece, drawBlock } from "./BlockDrawer";
+import { AppContext } from "./store";
 
 export enum PieceActionType {
   start = 100,
@@ -26,9 +27,7 @@ type PieceActions = {
   setPiece: (piece: Piece) => void;
 };
 
-const pieceActions = (
-  dispatch: React.Dispatch<GameAction | BoardPieceAction>
-): PieceActions => ({
+const pieceActions = ([, dispatch]: AppContext): PieceActions => ({
   start: () => dispatch({ type: PieceActionType.start }),
   moveRight: game => dispatch({ type: PieceActionType.moveRight, game }),
   moveLeft: game => dispatch({ type: PieceActionType.moveLeft, game }),
@@ -54,25 +53,31 @@ export type CheckScoreAction = {
 export type GameAction = { type: GameActionType } | CheckScoreAction;
 
 type GameActions = {
-  startGame: (game: GameState) => void;
+  startGame: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
   nextPiece: () => void;
-  checkScore: (actions: DrawableAction[]) => void;
+  checkScore: () => void;
   end: () => void;
 };
 
-const gameActions = (
-  dispatch: React.Dispatch<GameAction | BoardPieceAction>
-): GameActions => ({
-  startGame: game => {
-    dispatch({ type: PieceActionType.setPiece, piece: game.current });
+const gameActions = ([state, dispatch]: AppContext): GameActions => ({
+  startGame: () => {
+    dispatch({ type: PieceActionType.setPiece, piece: state.game.current });
     dispatch({ type: GameActionType.start });
   },
   pauseGame: () => dispatch({ type: GameActionType.pause }),
   resumeGame: () => dispatch({ type: GameActionType.resume }),
   nextPiece: () => dispatch({ type: GameActionType.nextPiece }),
-  checkScore: actions => dispatch({ type: GameActionType.checkScore, actions }),
+  checkScore: () =>
+    dispatch({
+      type: GameActionType.checkScore,
+      actions: drawBlock(
+        state.piece.pos.x,
+        state.piece.pos.y,
+        state.piece.drawer
+      )
+    }),
   end: () => dispatch({ type: GameActionType.end })
 });
 
@@ -88,6 +93,7 @@ export function isGameAction(
   return (action as GameAction).type in GameActionType;
 }
 
-export const actions = (
-  dispatch: React.Dispatch<GameAction | BoardPieceAction>
-): PieceActions & GameActions => ({ ...pieceActions(dispatch), ...gameActions(dispatch) });
+export const actions = (store: AppContext): PieceActions & GameActions => ({
+  ...pieceActions(store),
+  ...gameActions(store)
+});

@@ -13,8 +13,9 @@ const App: React.FC<{}> = () => {
   return (
     <StoreProvider>
       <StoreConsumer>
-        {([state, dispatch]) => {
-          const { startGame, pauseGame, resumeGame } = actions(dispatch);
+        {store => {
+          const [state] = store;
+          const { startGame, pauseGame, resumeGame } = actions(store);
           return (
             <div
               id="main"
@@ -26,7 +27,7 @@ const App: React.FC<{}> = () => {
               }}
             >
               <Header
-                startHandler={(): void => startGame(state.game)}
+                startHandler={startGame}
                 pauseHandler={pauseGame}
                 resumeHandler={resumeGame}
                 isPaused={state.game.paused}
@@ -36,7 +37,7 @@ const App: React.FC<{}> = () => {
                   level={state.game.level}
                   lines={state.game.completedLines}
                 />
-                <GameBoard store={[state, dispatch]} />
+                <GameBoard store={store} />
                 <NextPiece piece={state.game.next} />
               </div>
             </div>
