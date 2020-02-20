@@ -15,7 +15,8 @@ const App: React.FC<{}> = () => {
       <StoreConsumer>
         {store => {
           const [state] = store;
-          const { startGame, pauseGame, resumeGame } = actions(store);
+          const allActions = actions(store);
+          const { startGame, pauseGame, resumeGame } = allActions;
           return (
             <div
               id="main"
@@ -37,7 +38,7 @@ const App: React.FC<{}> = () => {
                   level={state.game.level}
                   lines={state.game.completedLines}
                 />
-                <GameBoard store={store} />
+                <GameBoard store={store} actions={allActions} />
                 <NextPiece piece={state.game.next} />
               </div>
             </div>

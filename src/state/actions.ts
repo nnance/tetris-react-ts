@@ -93,7 +93,9 @@ export function isGameAction(
   return (action as GameAction).type in GameActionType;
 }
 
-export const actions = (store: AppContext): PieceActions & GameActions => ({
+export type Actions = PieceActions & GameActions
+
+export const actions = (store: AppContext): Actions => ({
   ...pieceActions(store),
   ...gameActions(store)
 });

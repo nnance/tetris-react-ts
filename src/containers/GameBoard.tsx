@@ -2,7 +2,7 @@ import React from "react";
 import { drawBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { PieceActionType } from "../state/actions";
+import { PieceActionType, Actions } from "../state/actions";
 import { Action } from "../state/store";
 import { AppState } from "../state/app";
 import { useGameState } from "../state/game";
@@ -12,14 +12,15 @@ import { useGameState } from "../state/game";
 const updateBoard = drawBoard(20, 10);
 
 type GameBoardProps = {
-  store: [AppState, React.Dispatch<Action>]
+  store: [AppState, React.Dispatch<Action>],
+  actions: Actions
 }
 
 const GameBoardContainer: React.FC<GameBoardProps> = props => {
   const [{ game, piece }, dispatch] = props.store;
 
   const [state, setState] = React.useState(updateBoard([]));
-  useGameState(props.store);
+  useGameState([props.store[0], props.actions]);
 
   const [timer, setTimer] = React.useState<NodeJS.Timeout>();
 
