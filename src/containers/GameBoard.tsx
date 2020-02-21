@@ -2,9 +2,7 @@ import React from "react";
 import { drawBoard } from "../state/DrawableGrid";
 import GameBoard from "../components/GameBoard";
 import useKeyPress, { KeyCode } from "../hooks/useKeyPress";
-import { PieceActionType, Actions } from "../state/actions";
-import { Action } from "../state/store";
-import { AppState } from "../state/app";
+import { Store } from "../state/store";
 import { useGameState } from "../state/game";
 
 //TODO: detect when a line is completed
@@ -12,15 +10,17 @@ import { useGameState } from "../state/game";
 const updateBoard = drawBoard(20, 10);
 
 type GameBoardProps = {
-  store: [AppState, React.Dispatch<Action>],
-  actions: Actions
-}
+  store: Store;
+};
 
 const GameBoardContainer: React.FC<GameBoardProps> = props => {
-  const [{ game, piece }, dispatch] = props.store;
+  const [{ game, piece }, actions] = props.store;
+  const { moveDown, moveLeft, moveRight, rotate, start } = React.useRef(
+    actions
+  ).current;
 
   const [state, setState] = React.useState(updateBoard([]));
-  useGameState([props.store[0], props.actions]);
+  useGameState(props.store);
 
   const [timer, setTimer] = React.useState<NodeJS.Timeout>();
 
@@ -33,36 +33,31 @@ const GameBoardContainer: React.FC<GameBoardProps> = props => {
     if (!game.paused) {
       setTimer(timer => {
         if (timer) clearInterval(timer);
-        return setInterval(() => {
-          dispatch({ type: PieceActionType.moveDown, game });
-        }, 500);
+        return setInterval(() => moveDown(game), 500);
       });
-      dispatch({ type: PieceActionType.start, game });
+      start();
     }
-  }, [game, dispatch]);
+  }, [game, moveDown, start]);
 
   React.useEffect(() => {
     if (game.paused && timer) clearInterval(timer);
   }, [game, timer]);
 
   React.useEffect(() => {
-    if (leftArrow && !game.paused)
-      dispatch({ type: PieceActionType.moveLeft, game });
-  }, [game, leftArrow, dispatch]);
+    if (leftArrow && !game.paused) moveLeft(game);
+  }, [leftArrow, game, moveLeft]);
 
   React.useEffect(() => {
-    if (rightArrow && !game.paused)
-      dispatch({ type: PieceActionType.moveRight, game });
-  }, [game, rightArrow, dispatch]);
+    if (rightArrow && !game.paused) moveRight(game);
+  }, [game, rightArrow, moveRight]);
 
   React.useEffect(() => {
-    if (upArrow && !game.paused) dispatch({ type: PieceActionType.rotate, game });
-  }, [game, upArrow, dispatch]);
+    if (upArrow && !game.paused) rotate(game);
+  }, [game, upArrow, rotate]);
 
   React.useEffect(() => {
-    if (downArrow && !game.paused)
-      dispatch({ type: PieceActionType.moveDown, game });
-  }, [game, downArrow, dispatch]);
+    if (downArrow && !game.paused) moveDown(game);
+  }, [game, downArrow, moveDown]);
 
   React.useEffect(() => {
     setState(

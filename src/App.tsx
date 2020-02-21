@@ -3,7 +3,6 @@ import Header from "./components/Header";
 import Controls from "./containers/Controls";
 import GameBoard from "./containers/GameBoard";
 import NextPiece from "./containers/NextPiece";
-import { actions } from "./state/actions";
 import { StoreProvider, StoreConsumer } from "./state/store";
 
 // TODO: make middleware work for all actions
@@ -14,9 +13,7 @@ const App: React.FC<{}> = () => {
     <StoreProvider>
       <StoreConsumer>
         {store => {
-          const [state] = store;
-          const allActions = actions(store);
-          const { startGame, pauseGame, resumeGame } = allActions;
+          const [state, {startGame, pauseGame, resumeGame}] = store;
           return (
             <div
               id="main"
@@ -38,7 +35,7 @@ const App: React.FC<{}> = () => {
                   level={state.game.level}
                   lines={state.game.completedLines}
                 />
-                <GameBoard store={store} actions={allActions} />
+                <GameBoard store={store} />
                 <NextPiece piece={state.game.next} />
               </div>
             </div>

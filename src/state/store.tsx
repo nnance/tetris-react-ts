@@ -1,5 +1,5 @@
 import React, { useReducer } from "react";
-import { GameAction, BoardPieceAction, Actions } from "./actions";
+import { GameAction, BoardPieceAction, Actions, actions } from "./actions";
 import { AppState, reducer } from "./app";
 import { initialGameState } from "./game";
 import { pieceToBoardPiece } from "./piece";
@@ -16,19 +16,16 @@ const initialState: AppState = {
   piece: pieceToBoardPiece(game.current)
 };
 
-export const Store = React.createContext<AppContext>([
-  initialState,
-  (action: Action) => {}
-]);
+export const Store = React.createContext<Store>([initialState, {} as Actions]);
 
 export const StoreProvider = (
   props: React.PropsWithChildren<{ value?: AppState }>
 ) => {
   const { children, value } = props;
   const [state, dispatch]: AppContext = useReducer(reducer, value || initialState);
-  const context: AppContext = [state, dispatch];
+  const store: Store = [state, actions([state, dispatch])];
 
-  return <Store.Provider value={context}>{children}</Store.Provider>;
+  return <Store.Provider value={store}>{children}</Store.Provider>;
 };
 
 export const StoreConsumer = Store.Consumer;
