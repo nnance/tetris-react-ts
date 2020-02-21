@@ -3,6 +3,7 @@ import { GameAction, BoardPieceAction, Actions, actions } from "./actions";
 import { AppState, reducer } from "./app";
 import { initialGameState } from "./game";
 import { pieceToBoardPiece } from "./piece";
+import { applyMiddleware } from "./middleware";
 
 export type Action = GameAction | BoardPieceAction;
 
@@ -23,7 +24,7 @@ export const StoreProvider = (
 ) => {
   const { children, value } = props;
   const [state, dispatch]: AppContext = useReducer(reducer, value || initialState);
-  const store: Store = [state, actions([state, dispatch])];
+  const store: Store = [state, actions([state, applyMiddleware(dispatch)])];
 
   return <Store.Provider value={store}>{children}</Store.Provider>;
 };
