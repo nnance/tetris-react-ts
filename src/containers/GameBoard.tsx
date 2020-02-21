@@ -33,7 +33,7 @@ const GameBoardContainer: React.FC<GameBoardProps> = props => {
     if (!game.paused) {
       setTimer(timer => {
         if (timer) clearInterval(timer);
-        return setInterval(() => moveDown(), 500);
+        return setInterval(() => moveDown(game), 500);
       });
       start();
     }
@@ -44,19 +44,19 @@ const GameBoardContainer: React.FC<GameBoardProps> = props => {
   }, [game, timer]);
 
   React.useEffect(() => {
-    if (leftArrow) moveLeft();
+    if (!game.paused && leftArrow) moveLeft(game);
   }, [leftArrow, game, moveLeft]);
 
   React.useEffect(() => {
-    if (rightArrow) moveRight();
+    if (!game.paused && rightArrow) moveRight(game);
   }, [game, rightArrow, moveRight]);
 
   React.useEffect(() => {
-    if (upArrow) rotate();
+    if (!game.paused && upArrow) rotate(game);
   }, [game, upArrow, rotate]);
 
   React.useEffect(() => {
-    if (downArrow) moveDown();
+    if (!game.paused && downArrow) moveDown(game);
   }, [game, downArrow, moveDown]);
 
   React.useEffect(() => {

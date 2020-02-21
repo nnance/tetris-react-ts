@@ -20,19 +20,19 @@ export type BoardPieceAction =
 
 type PieceActions = {
   start: () => void;
-  moveRight: () => void;
-  moveLeft: () => void;
-  moveDown: () => void;
-  rotate: () => void;
+  moveRight: (game: GameState) => void;
+  moveLeft: (game: GameState) => void;
+  moveDown: (game: GameState) => void;
+  rotate: (game: GameState) => void;
   setPiece: (piece: Piece) => void;
 };
 
 const pieceActions = ([state, dispatch]: AppContext): PieceActions => ({
   start: () => dispatch({ type: PieceActionType.start }),
-  moveRight: () => dispatch({ type: PieceActionType.moveRight, game: state.game }),
-  moveLeft: () => dispatch({ type: PieceActionType.moveLeft, game: state.game }),
-  moveDown: () => dispatch({ type: PieceActionType.moveDown, game: state.game }),
-  rotate: () => dispatch({ type: PieceActionType.rotate, game: state.game }),
+  moveRight: game => dispatch({ type: PieceActionType.moveRight, game }),
+  moveLeft: game => dispatch({ type: PieceActionType.moveLeft, game }),
+  moveDown: game => dispatch({ type: PieceActionType.moveDown, game }),
+  rotate: game => dispatch({ type: PieceActionType.rotate, game }),
   setPiece: piece => dispatch({ type: PieceActionType.setPiece, piece })
 });
 
