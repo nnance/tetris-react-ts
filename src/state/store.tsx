@@ -10,7 +10,10 @@ export type Action = GameAction | BoardPieceAction;
 export type AppContext = [AppState, React.Dispatch<Action>];
 
 export type Store = [AppState, Actions];
-export type GameStore = [GameState, React.Dispatch<React.SetStateAction<GameState>>];
+export type GameStore = [
+  GameState,
+  React.Dispatch<React.SetStateAction<GameState>>
+];
 
 const game = initialGameState();
 const initialState: AppState = {
@@ -22,9 +25,12 @@ export const Store = React.createContext<Store>([initialState, {} as Actions]);
 
 export const StoreProvider = (
   props: React.PropsWithChildren<{ value?: AppState }>
-) => {
+): React.ReactElement => {
   const { children, value } = props;
-  const [state, dispatch]: AppContext = useReducer(reducer, value || initialState);
+  const [state, dispatch]: AppContext = useReducer(
+    reducer,
+    value || initialState
+  );
   const store: Store = [state, actions([state, applyMiddleware(dispatch)])];
 
   return <Store.Provider value={store}>{children}</Store.Provider>;

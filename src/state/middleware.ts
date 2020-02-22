@@ -4,6 +4,6 @@ type Middleware = (
   dispatch: React.Dispatch<Action>
 ) => (action: Action) => void;
 
-export const applyMiddleware: Middleware = dispatch => action => {
+export const applyMiddleware: Middleware = dispatch => (action): void => {
   dispatch(action);
 };

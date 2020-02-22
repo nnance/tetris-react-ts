@@ -12,8 +12,8 @@ const App: React.FC<{}> = () => {
   return (
     <StoreProvider>
       <StoreConsumer>
-        {store => {
-          const [state, {startGame, pauseGame, resumeGame}] = store;
+        {(store): React.ReactElement => {
+          const [state, { startGame, pauseGame, resumeGame }] = store;
           return (
             <div
               id="main"

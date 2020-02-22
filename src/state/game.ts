@@ -58,6 +58,15 @@ export const highlightLines = (actions: DrawableAction[]): DrawableAction[] => {
   }, [] as DrawableAction[]);
 };
 
+export const initialGameState = (): GameState => ({
+  paused: true,
+  current: pickNewPiece(),
+  next: pickNewPiece(),
+  level: 1,
+  completedLines: 0,
+  lines: []
+});
+
 export const reducer = (state: GameState, action: GameAction): GameState => {
   return action.type === GameActionType.pause
     ? { ...state, paused: true }
@@ -84,16 +93,10 @@ export const reducer = (state: GameState, action: GameAction): GameState => {
     : { ...state };
 };
 
-export const initialGameState = (): GameState => ({
-  paused: true,
-  current: pickNewPiece(),
-  next: pickNewPiece(),
-  level: 1,
-  completedLines: 0,
-  lines: []
-});
-
-export const useGameState = ([store, { checkScore, nextPiece, setPiece }]: Store) => {
+export const useGameState = ([
+  store,
+  { checkScore, nextPiece, setPiece }
+]: Store): void => {
   React.useEffect(() => {
     const { piece, game } = store;
     if (piece.isAtBottom) {

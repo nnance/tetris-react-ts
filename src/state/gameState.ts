@@ -66,25 +66,25 @@ const initialGameState = (): GameState => ({
 });
 
 export const gameActions = ([state, setState]: GameStore): GameActions => ({
-  startGame: () => {
+  startGame: (): void => {
     // dispatch({ type: PieceActionType.setPiece, piece: state.game.current });
-    setState(state => ({
+    setState({
       ...initialGameState(),
       paused: false
-    }));
+    });
   },
-  pauseGame: () => setState(state => ({ ...state, paused: true })),
-  resumeGame: () => setState(state => ({ ...state, paused: false })),
-  nextPiece: () =>
+  pauseGame: (): void => setState(state => ({ ...state, paused: true })),
+  resumeGame: (): void => setState(state => ({ ...state, paused: false })),
+  nextPiece: (): void =>
     setState(state => ({
       ...state,
       current: state.next,
       next: pickNewPiece()
     })),
-  checkScore: actions =>
+  checkScore: (actions): void =>
     setState(state => ({
       ...state,
       lines: highlightLines(state.lines.concat(actions))
     })),
-  end: () => setState(state => ({ ...state, paused: true }))
+  end: (): void => setState(state => ({ ...state, paused: true }))
 });
