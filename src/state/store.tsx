@@ -1,7 +1,7 @@
 import React, { useReducer } from "react";
 import { GameAction, BoardPieceAction, Actions, actions } from "./actions";
 import { AppState, reducer } from "./app";
-import { initialGameState } from "./game";
+import { initialGameState, GameState } from "./game";
 import { pieceToBoardPiece } from "./piece";
 import { applyMiddleware } from "./middleware";
 
@@ -10,6 +10,7 @@ export type Action = GameAction | BoardPieceAction;
 export type AppContext = [AppState, React.Dispatch<Action>];
 
 export type Store = [AppState, Actions];
+export type GameStore = [GameState, React.Dispatch<React.SetStateAction<GameState>>];
 
 const game = initialGameState();
 const initialState: AppState = {
