@@ -4,10 +4,10 @@ import { drawers as zBlockDrawers } from "./blocks/ZBlock";
 import { drawers as tBlockDrawers } from "./blocks/TBlock";
 import { drawers as sBlockDrawers } from "./blocks/SBlock";
 import { drawers as lBlockDrawers } from "./blocks/LBlock";
-import { Piece, DrawableAction } from "./BlockDrawer";
+import { Piece, DrawableAction, drawBlock } from "./BlockDrawer";
 import { BlockState, BoardPiece } from "./DrawableGrid";
-import { GameStore } from "./store";
-import { GameState } from "./game";
+import { pieceToBoardPiece } from "./piece";
+import { GameActions } from "./actions";
 
 const pieces: Piece[] = [
   jBlockDrawers,
@@ -18,14 +18,20 @@ const pieces: Piece[] = [
   lBlockDrawers
 ];
 
-type GameActions = {
-  startGame: () => void;
-  pauseGame: () => void;
-  resumeGame: () => void;
-  nextPiece: () => void;
-  checkScore: (actions: DrawableAction[]) => void;
-  end: () => void;
+export type GameState = {
+  paused: boolean;
+  current: Piece;
+  next: Piece;
+  level: number;
+  completedLines: number;
+  lines: DrawableAction[];
+  boardPiece: BoardPiece;
 };
+
+type GameSetter = (
+  state: GameState | ((state: GameState) => GameState)
+) => void;
+type GetGameActions = (state: GameState, setState: GameSetter) => GameActions;
 
 const pickNewPiece = (): Piece => {
   const pieceIndex = Math.floor(Math.random() * pieces.length);
@@ -56,21 +62,31 @@ const highlightLines = (actions: DrawableAction[]): DrawableAction[] => {
   }, [] as DrawableAction[]);
 };
 
-const initialGameState = (): GameState => ({
-  paused: true,
-  current: pickNewPiece(),
-  next: pickNewPiece(),
-  level: 1,
-  completedLines: 0,
-  lines: []
-});
+const initialGameState = (): GameState => {
+  const current = pickNewPiece();
+  return {
+    paused: true,
+    current,
+    next: pickNewPiece(),
+    level: 1,
+    completedLines: 0,
+    lines: [],
+    boardPiece: pieceToBoardPiece(current)
+  };
+};
 
-export const gameActions = ([state, setState]: GameStore): GameActions => ({
+export const gameActions: GetGameActions = (state, setState) => ({
   startGame: (): void => {
-    // dispatch({ type: PieceActionType.setPiece, piece: state.game.current });
+    const state = initialGameState();
     setState({
-      ...initialGameState(),
-      paused: false
+      ...state,
+      paused: false,
+      boardPiece: {
+        pos: { x: 1, y: 0 },
+        piece: state.current,
+        isAtBottom: false,
+        drawer: state.current[0]
+      }
     });
   },
   pauseGame: (): void => setState(state => ({ ...state, paused: true })),
@@ -81,10 +97,18 @@ export const gameActions = ([state, setState]: GameStore): GameActions => ({
       current: state.next,
       next: pickNewPiece()
     })),
-  checkScore: (actions): void =>
+  checkScore: (): void =>
     setState(state => ({
       ...state,
-      lines: highlightLines(state.lines.concat(actions))
+      lines: highlightLines(
+        state.lines.concat(
+          drawBlock(
+            state.boardPiece.pos.x,
+            state.boardPiece.pos.y,
+            state.boardPiece.drawer
+          )
+        )
+      )
     })),
   end: (): void => setState(state => ({ ...state, paused: true }))
 });

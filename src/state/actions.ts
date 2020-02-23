@@ -53,7 +53,7 @@ export type CheckScoreAction = {
 
 export type GameAction = { type: GameActionType } | CheckScoreAction;
 
-type GameActions = {
+export type GameActions = {
   startGame: () => void;
   pauseGame: () => void;
   resumeGame: () => void;
